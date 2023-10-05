@@ -1,15 +1,19 @@
 package com.mit.util;
 
 import com.mit.global.Dependencies;
-import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.util.BlockPos;
-import net.minecraft.util.EnumFacing;
-
+import com.sun.javafx.geom.Vec3d;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import javafx.util.Pair;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockLiquid;
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.EntityPlayerSP;
+import net.minecraft.init.Blocks;
+import net.minecraft.util.*;
 
 public class BlockUtils {
 
@@ -80,6 +84,35 @@ public class BlockUtils {
     return returnList;
   }
 
+  public static BlockPos blocksInFront(HashSet<BlockPos> broken, int maxDistance, HashSet<String> allowed) {
+    Vec3 vec = Dependencies.mc.thePlayer.getPositionVector().addVector(0, Dependencies.mc.thePlayer.eyeHeight, 0);
+    float pitch = Dependencies.mc.thePlayer.rotationPitch;
+    float yaw = Dependencies.mc.thePlayer.rotationYaw;
+    double x = -Math.sin(Math.toRadians(yaw)) * Math.cos(Math.toRadians(pitch));
+    double y = -Math.sin(Math.toRadians(pitch));
+    double z = Math.cos(Math.toRadians(yaw)) * Math.cos(Math.toRadians(pitch));
+
+    Vec3 direction = new Vec3(x, y, z);
+    Vec3 end = vec.addVector(
+      direction.xCoord * maxDistance,
+      direction.yCoord * maxDistance,
+      direction.zCoord * maxDistance
+    );
+
+    MovingObjectPosition result = Dependencies.mc.theWorld.rayTraceBlocks(vec, end, false);
+
+    if (
+      result != null &&
+      result.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK &&
+      !broken.contains(result.getBlockPos()) &&
+      allowed.contains(getBlockType(result.getBlockPos()).getUnlocalizedName())
+    ) {
+      return result.getBlockPos();
+    }
+
+    return null;
+  }
+
   public static List<BlockPos> getBlocksInRadius(
     int x,
     int y,
@@ -87,21 +120,36 @@ public class BlockUtils {
     BlockPos around,
     HashSet<String> blocks,
     HashSet<BlockPos> alrBroken,
-    double distance
+    double distance,
+    boolean isDigUnder
   ) {
     List<BlockPos> returnList = new ArrayList<>();
 
-    BlockPos
-      .getAllInBox(around.add(-x, -y, -z), around.add(x, y, z))
-      .forEach(i -> {
-        if (
-          !alrBroken.contains(i) &&
-          blocks.contains(getBlockType(i).getUnlocalizedName()) &&
-          MathUtils.distanceFromTo(around, i) < distance
-        ) {
-          returnList.add(i);
-        }
-      });
+    if (isDigUnder) {
+      BlockPos
+        .getAllInBox(around.add(-x, -y, -z), around.add(x, y, z))
+        .forEach(i -> {
+          if (
+            !alrBroken.contains(i) &&
+            blocks.contains(getBlockType(i).getUnlocalizedName()) &&
+            MathUtils.distanceFromTo(around, i) < distance
+          ) {
+            returnList.add(i);
+          }
+        });
+    } else {
+      BlockPos
+        .getAllInBox(around.add(-x, 0, -z), around.add(x, y, z))
+        .forEach(i -> {
+          if (
+            !alrBroken.contains(i) &&
+            blocks.contains(getBlockType(i).getUnlocalizedName()) &&
+            MathUtils.distanceFromTo(around, i) < distance
+          ) {
+            returnList.add(i);
+          }
+        });
+    }
 
     return returnList;
   }

@@ -3,7 +3,6 @@ package com.mit.gui.config;
 import gg.essential.vigilance.Vigilant;
 import gg.essential.vigilance.data.Property;
 import gg.essential.vigilance.data.PropertyType;
-
 import java.io.File;
 
 public class Config extends Vigilant {
@@ -25,6 +24,14 @@ public class Config extends Vigilant {
     category = "Nuker"
   )
   public static boolean nukerMode = false;
+
+  @Property(
+    type = PropertyType.SWITCH,
+    name = "Dig Under",
+    description = "Turn this off to not dig under player.",
+    category = "Nuker"
+  )
+  public static boolean isDigUnder = false;
 
   @Property(
     type = PropertyType.SLIDER,

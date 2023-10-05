@@ -4,16 +4,17 @@ import com.mit.event.MsEvent;
 import com.mit.global.Dependencies;
 import com.mit.gui.config.Config;
 import com.mit.util.BlockUtils;
+import com.mit.util.ChatUtils;
 import com.mit.util.PacketUtils;
 import com.mit.util.Render;
-import net.minecraft.util.BlockPos;
-import net.minecraftforge.client.event.RenderWorldLastEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import net.minecraft.util.BlockPos;
+import net.minecraftforge.client.event.RenderWorldLastEvent;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public class MiningNuker {
 
@@ -25,7 +26,7 @@ public class MiningNuker {
   int timeBeforeReNuke = 0;
 
   @SubscribeEvent
-  public void onMs(MsEvent event) {
+  public void onMillisecond(MsEvent event) {
     if (!Config.nuker) {
       nukerTickCount = 0;
       blocksToBreakUpdate = 500;
@@ -44,11 +45,11 @@ public class MiningNuker {
     }
 
     if (nukerTickCount >= 1000 / Config.nukerBPS) {
-      List<BlockPos> blocksToBreak = new ArrayList<>();
+      List<BlockPos> blocksToBreak2 = new ArrayList<>();
 
       if (!Config.nukerMode) {
         nukerTickCount = 0;
-        blocksToBreak =
+        blocksToBreak2 =
           BlockUtils.getBlocksInRadius(
             Config.nukerRange,
             Config.nukerRange,
@@ -56,21 +57,27 @@ public class MiningNuker {
             Dependencies.mc.thePlayer.getPosition(),
             this.blocksToBreak,
             this.alrBroken,
-            Config.nukerRange
+            Config.nukerRange,
+            Config.isDigUnder
           );
       } else {
-        BlockPos block = BlockUtils.getBlocksInFront(Config.nukerRange);
-        if (!this.alrBroken.contains(block)) {
-          blocksToBreak.add(BlockUtils.getBlocksInFront(Config.nukerRange));
+        BlockPos block = BlockUtils.blocksInFront(this.alrBroken, Config.nukerRange, this.blocksToBreak);
+        if (block != null && !this.alrBroken.contains(block)) {
+          blocksToBreak2.add(block);
         }
       }
 
-      if (blocksToBreak.isEmpty()) {
-        curBlock = null;
+      if (blocksToBreak2.isEmpty()) {
+        this.curBlock = null;
         return;
       }
 
-      curBlock = BlockUtils.getClosest(blocksToBreak, Dependencies.mc.thePlayer.getPosition());
+      if (blocksToBreak2.size() > 1) {
+        this.curBlock = BlockUtils.getClosest(blocksToBreak2, Dependencies.mc.thePlayer.getPosition());
+      } else {
+        this.curBlock = blocksToBreak2.get(0);
+      }
+
       PacketUtils.sendStartPacket(curBlock, PacketUtils.getEnum(curBlock));
       this.alrBroken.add(curBlock);
     } else {

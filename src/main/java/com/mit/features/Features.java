@@ -1,22 +1,20 @@
 package com.mit.features;
 
 import com.mit.features.mining.MiningFeatures;
-import net.minecraftforge.common.MinecraftForge;
-
 import java.util.ArrayList;
 import java.util.List;
+import net.minecraftforge.common.MinecraftForge;
 
 public class Features {
 
   List<Object> allFeatures = new ArrayList<>();
+  MiningFeatures miningFeatures = new MiningFeatures();
 
   public Features() {
-    allFeatures.addAll(new MiningFeatures().getMiningFeatures());
+    allFeatures.addAll(miningFeatures.getMiningFeatures());
   }
 
-  public void indexAll() {
-    for (Object event : allFeatures) {
-      MinecraftForge.EVENT_BUS.register(event);
-    }
+  public List<Object> getList() {
+    return allFeatures;
   }
 }
