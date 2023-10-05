@@ -2,20 +2,20 @@ package com.mit.util;
 
 import com.mit.global.Dependencies;
 import com.mit.mixin.RenderManagerAccessor;
-import java.awt.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderGlobal;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.WorldRenderer;
-import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.Vec3;
 import org.lwjgl.opengl.GL11;
+
+import java.awt.*;
 
 public class Render {
 
@@ -166,8 +166,8 @@ public class Render {
 
     GlStateManager.pushMatrix();
 
-    Entity viewer = Dependencies.MC.getRenderViewEntity();
-    RenderManagerAccessor rm = (RenderManagerAccessor) Dependencies.MC.getRenderManager();
+    Entity viewer = Dependencies.mc.getRenderViewEntity();
+    RenderManagerAccessor rm = (RenderManagerAccessor) Dependencies.mc.getRenderManager();
 
     double x = X - rm.getRenderPosX();
     double y = Y - rm.getRenderPosY();
@@ -187,11 +187,11 @@ public class Render {
 
     drawNametag(str);
 
-    GlStateManager.rotate(-Dependencies.MC.getRenderManager().playerViewY, 0.0F, 1.0F, 0.0F);
-    GlStateManager.rotate(Dependencies.MC.getRenderManager().playerViewX, 1.0F, 0.0F, 0.0F);
+    GlStateManager.rotate(-Dependencies.mc.getRenderManager().playerViewY, 0.0F, 1.0F, 0.0F);
+    GlStateManager.rotate(Dependencies.mc.getRenderManager().playerViewX, 1.0F, 0.0F, 0.0F);
     GlStateManager.translate(0, -0.25f, 0);
-    GlStateManager.rotate(-Dependencies.MC.getRenderManager().playerViewX, 1.0F, 0.0F, 0.0F);
-    GlStateManager.rotate(Dependencies.MC.getRenderManager().playerViewY, 0.0F, 1.0F, 0.0F);
+    GlStateManager.rotate(-Dependencies.mc.getRenderManager().playerViewX, 1.0F, 0.0F, 0.0F);
+    GlStateManager.rotate(Dependencies.mc.getRenderManager().playerViewY, 0.0F, 1.0F, 0.0F);
 
     if (showDist) {
       drawNametag("§e" + Math.round(dist * 10) / 10 + " blocks");
@@ -203,12 +203,12 @@ public class Render {
   }
 
   public static void drawNametag(String str) {
-    FontRenderer fontrenderer = Dependencies.MC.fontRendererObj;
+    FontRenderer fontrenderer = Dependencies.mc.fontRendererObj;
     float f1 = 0.0266666688f;
     GlStateManager.pushMatrix();
     GL11.glNormal3f(0.0F, 1.0F, 0.0F);
-    GlStateManager.rotate(-Dependencies.MC.getRenderManager().playerViewY, 0.0F, 1.0F, 0.0F);
-    GlStateManager.rotate(Dependencies.MC.getRenderManager().playerViewX, 1.0F, 0.0F, 0.0F);
+    GlStateManager.rotate(-Dependencies.mc.getRenderManager().playerViewY, 0.0F, 1.0F, 0.0F);
+    GlStateManager.rotate(Dependencies.mc.getRenderManager().playerViewX, 1.0F, 0.0F, 0.0F);
     GlStateManager.scale(-f1, -f1, f1);
     GlStateManager.disableLighting();
     GlStateManager.depthMask(false);

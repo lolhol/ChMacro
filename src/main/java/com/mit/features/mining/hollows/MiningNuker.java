@@ -1,17 +1,19 @@
-package com.mit.features.mining;
+package com.mit.features.mining.hollows;
 
 import com.mit.event.MsEvent;
 import com.mit.global.Dependencies;
 import com.mit.gui.config.Config;
 import com.mit.util.BlockUtils;
-import com.mit.util.ChatUtils;
+import com.mit.util.PacketUtils;
 import com.mit.util.Render;
-import java.awt.*;
-import java.util.HashSet;
-import java.util.List;
 import net.minecraft.util.BlockPos;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 
 public class MiningNuker {
 
@@ -20,6 +22,7 @@ public class MiningNuker {
   HashSet<String> blocksToBreak = new HashSet<>();
   HashSet<BlockPos> alrBroken = new HashSet<>();
   BlockPos curBlock = null;
+  int timeBeforeReNuke = 0;
 
   @SubscribeEvent
   public void onMs(MsEvent event) {
@@ -36,24 +39,40 @@ public class MiningNuker {
       blocksToBreakUpdate++;
     }
 
-    if (nukerTickCount >= 1000 / Config.nukerBPS) {
-      nukerTickCount = 0;
+    if (timeBeforeReNuke >= 2000) {
+      this.alrBroken.clear();
+    }
 
-      List<BlockPos> blocksToBreak = BlockUtils.getBlocksInRadius(
-        Config.nukerRange,
-        Config.nukerRange,
-        Config.nukerRange,
-        Dependencies.MC.thePlayer.getPosition(),
-        this.blocksToBreak,
-        this.alrBroken
-      );
+    if (nukerTickCount >= 1000 / Config.nukerBPS) {
+      List<BlockPos> blocksToBreak = new ArrayList<>();
+
+      if (!Config.nukerMode) {
+        nukerTickCount = 0;
+        blocksToBreak =
+          BlockUtils.getBlocksInRadius(
+            Config.nukerRange,
+            Config.nukerRange,
+            Config.nukerRange,
+            Dependencies.mc.thePlayer.getPosition(),
+            this.blocksToBreak,
+            this.alrBroken,
+            Config.nukerRange
+          );
+      } else {
+        BlockPos block = BlockUtils.getBlocksInFront(Config.nukerRange);
+        if (!this.alrBroken.contains(block)) {
+          blocksToBreak.add(BlockUtils.getBlocksInFront(Config.nukerRange));
+        }
+      }
 
       if (blocksToBreak.isEmpty()) {
         curBlock = null;
         return;
       }
 
-      curBlock = blocksToBreak.get(0);
+      curBlock = BlockUtils.getClosest(blocksToBreak, Dependencies.mc.thePlayer.getPosition());
+      PacketUtils.sendStartPacket(curBlock, PacketUtils.getEnum(curBlock));
+      this.alrBroken.add(curBlock);
     } else {
       nukerTickCount++;
     }
@@ -66,11 +85,11 @@ public class MiningNuker {
     }
 
     if (curBlock != null) {
-      Render.drawBox(curBlock.getX(), curBlock.getY(), curBlock.getZ(), Color.RED, 0.5F, event.partialTicks, false);
+      Render.drawFilledInBlock(curBlock, Color.WHITE, 0.2F, event.partialTicks);
     }
   }
 
-  private void parseString(String str) {
+  void parseString(String str) {
     blocksToBreak.clear();
     str = str.toLowerCase();
     StringBuilder curWord = new StringBuilder();
@@ -80,11 +99,11 @@ public class MiningNuker {
       if (!cur.equals(",")) {
         curWord.append(cur);
       } else {
-        blocksToBreak.add("tile." + curWord.toString());
+        blocksToBreak.add("tile." + curWord);
         curWord = new StringBuilder();
       }
     }
 
-    blocksToBreak.add("tile." + curWord.toString());
+    blocksToBreak.add("tile." + curWord);
   }
 }

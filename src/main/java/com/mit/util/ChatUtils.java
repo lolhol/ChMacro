@@ -7,6 +7,6 @@ import net.minecraft.util.IChatComponent;
 public class ChatUtils {
 
   public static void chat(String msg) {
-    Dependencies.MC.thePlayer.addChatMessage((IChatComponent) new ChatComponentText(msg));
+    Dependencies.mc.thePlayer.addChatMessage(new ChatComponentText(msg));
   }
 }

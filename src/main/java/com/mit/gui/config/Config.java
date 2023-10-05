@@ -3,6 +3,7 @@ package com.mit.gui.config;
 import gg.essential.vigilance.Vigilant;
 import gg.essential.vigilance.data.Property;
 import gg.essential.vigilance.data.PropertyType;
+
 import java.io.File;
 
 public class Config extends Vigilant {
@@ -18,6 +19,14 @@ public class Config extends Vigilant {
   public static boolean nuker = false;
 
   @Property(
+    type = PropertyType.SWITCH,
+    name = "Mode",
+    description = "On = when you look at a block it breaks it | off = blocks around you are broken",
+    category = "Nuker"
+  )
+  public static boolean nukerMode = false;
+
+  @Property(
     type = PropertyType.SLIDER,
     name = "Nuker BPS",
     description = "dont set this too high and ur chilling",
@@ -25,7 +34,7 @@ public class Config extends Vigilant {
     min = 1,
     max = 80
   )
-  public static int nukerBPS = 80;
+  public static int nukerBPS = 20;
 
   @Property(
     type = PropertyType.TEXT,

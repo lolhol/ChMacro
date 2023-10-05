@@ -4,16 +4,9 @@ import com.mit.commands.OpenGUI;
 import com.mit.commands.test;
 import com.mit.event.MsEvent;
 import com.mit.event.SecondEvent;
-import com.mit.features.mining.MiningNuker;
+import com.mit.features.Features;
 import gg.essential.api.EssentialAPI;
 import gg.essential.api.commands.Command;
-import java.io.File;
-import java.time.Duration;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
@@ -25,19 +18,27 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.opengl.Display;
 
+import java.io.File;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+
 @Mod(modid = "autogg", name = "autogg", version = "1.0.0", clientSideOnly = true)
 @SideOnly(Side.CLIENT)
 public class MIT {
 
   public static File modFile = null;
   public static ArrayList<KeyBinding> keybinds = new ArrayList<>();
+  public Features features = new Features();
 
   @Mod.EventHandler
   public void init(FMLInitializationEvent event) {
     Display.setTitle("MiningInTwo");
     registerCommands(new OpenGUI(), new test());
-
-    registerEvents(new MiningNuker());
+    features.indexAll();
   }
 
   @Mod.EventHandler
