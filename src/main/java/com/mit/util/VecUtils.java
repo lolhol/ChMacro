@@ -1,9 +1,8 @@
 package com.mit.util;
 
 import com.mit.global.Dependencies;
-import net.minecraft.client.settings.KeyBinding;
-
 import java.util.HashMap;
+import net.minecraft.client.settings.KeyBinding;
 
 public class VecUtils {
 

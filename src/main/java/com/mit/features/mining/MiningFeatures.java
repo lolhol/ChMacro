@@ -2,7 +2,6 @@ package com.mit.features.mining;
 
 import com.mit.features.mining.hollows.GetMetalDetectorChestLoc;
 import com.mit.features.mining.hollows.MiningNuker;
-
 import java.util.ArrayList;
 import java.util.List;
 
