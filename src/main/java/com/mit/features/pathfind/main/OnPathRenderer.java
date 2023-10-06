@@ -1,13 +1,14 @@
 package com.mit.features.pathfind.main;
 
-import com.dillo.pathfinding.mit.finder.utils.BlockNodeClass;
-import com.dillo.utils.renderUtils.RenderBox;
-import java.awt.*;
-import java.util.ArrayList;
-import java.util.List;
+import com.mit.features.pathfind.utils.BlockNodeClass;
+import com.mit.util.Render;
 import net.minecraft.util.BlockPos;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class OnPathRenderer {
 
@@ -33,16 +34,16 @@ public class OnPathRenderer {
       if (block.actionType != null) {
         switch (block.actionType) {
           case WALK:
-            RenderBox.drawBox(pos.getX(), pos.getY(), pos.getZ(), Color.BLUE, 0.4F, event.partialTicks, false);
+            Render.drawBox(pos.getX(), pos.getY(), pos.getZ(), Color.BLUE, 0.4F, event.partialTicks, false);
             break;
           case JUMP:
-            RenderBox.drawBox(pos.getX(), pos.getY(), pos.getZ(), Color.RED, 0.4F, event.partialTicks, false);
+            Render.drawBox(pos.getX(), pos.getY(), pos.getZ(), Color.RED, 0.4F, event.partialTicks, false);
             break;
           case FALL:
-            RenderBox.drawBox(pos.getX(), pos.getY(), pos.getZ(), Color.GREEN, 0.4F, event.partialTicks, false);
+            Render.drawBox(pos.getX(), pos.getY(), pos.getZ(), Color.GREEN, 0.4F, event.partialTicks, false);
             break;
           case BREAK:
-            RenderBox.drawBox(pos.getX(), pos.getY(), pos.getZ(), Color.MAGENTA, 0.4F, event.partialTicks, false);
+            Render.drawBox(pos.getX(), pos.getY(), pos.getZ(), Color.MAGENTA, 0.4F, event.partialTicks, false);
             break;
         }
       }
