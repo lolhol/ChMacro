@@ -1,4 +1,4 @@
-package com.mit.util.renderModules;
+package com.mit.features.render;
 
 import com.mit.util.Render;
 import java.awt.*;

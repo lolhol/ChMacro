@@ -1,8 +1,8 @@
 package com.mit.features.pathfind.main;
 
 import com.mit.features.pathfind.utils.*;
+import com.mit.features.render.RenderMultipleBlocksMod;
 import com.mit.util.ChatUtils;
-import com.mit.util.renderModules.RenderMultipleBlocksMod;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;

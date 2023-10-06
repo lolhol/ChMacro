@@ -4,7 +4,14 @@ import com.mit.commands.OpenGUI;
 import com.mit.commands.test;
 import com.mit.event.MsEvent;
 import com.mit.event.SecondEvent;
+import com.mit.features.Features;
 import com.mit.features.mining.MiningFeatures;
+import com.mit.features.mining.hollows.GetMetalDetectorChestLoc;
+import com.mit.features.mining.hollows.MiningNuker;
+import com.mit.features.render.RenderModules;
+import com.mit.features.render.RenderMultipleLines;
+import com.mit.features.render.RenderPoints;
+import com.mit.features.render.RenderSingleLineTwoPoints;
 import gg.essential.api.EssentialAPI;
 import gg.essential.api.commands.Command;
 import java.io.File;
@@ -31,13 +38,20 @@ public class MIT {
 
   public static File modFile = null;
   MiningFeatures miningFeatures = new MiningFeatures();
+  RenderModules renderFeatures = new RenderModules();
   public static ArrayList<KeyBinding> keybinds = new ArrayList<>();
 
   @Mod.EventHandler
   public void init(FMLInitializationEvent event) {
     Display.setTitle("MiningInTwo");
     registerCommands(new OpenGUI(), new test());
-    registerEvents(miningFeatures.getMiningFeatures());
+    registerEvents(
+      new RenderSingleLineTwoPoints(),
+      new RenderPoints(),
+      new MiningNuker(),
+      new GetMetalDetectorChestLoc(),
+      new RenderMultipleLines()
+    );
   }
 
   @Mod.EventHandler

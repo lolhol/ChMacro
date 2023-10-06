@@ -1,10 +1,12 @@
 package com.mit.commands;
 
+import com.mit.features.render.RenderPoints;
 import com.mit.global.Dependencies;
-import com.mit.util.BlockUtils;
 import com.mit.util.ChatUtils;
+import com.mit.util.MathUtils;
 import gg.essential.api.commands.Command;
 import gg.essential.api.commands.DefaultHandler;
+import net.minecraft.util.Vec3;
 
 public class test extends Command {
 
@@ -13,7 +15,5 @@ public class test extends Command {
   }
 
   @DefaultHandler
-  public void handle() {
-    ChatUtils.chat(BlockUtils.getBlockType(Dependencies.mc.thePlayer.getPosition().add(0, -1, 0)).getUnlocalizedName());
-  }
+  public void handle(int x, int y, int z) {}
 }

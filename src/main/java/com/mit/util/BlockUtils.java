@@ -214,13 +214,73 @@ public class BlockUtils {
     );
   }
 
+  public static boolean isAbleToWalkBetween(Vec3 start, Vec3 end) {
+    Vec3[] vecs = MathUtils.getFourPointsAbout(start, end, 0.5);
+    RayTracingUtils.CollisionResult firstCollision = RayTracingUtils.getCollisionBlock(
+      vecs[0].xCoord,
+      vecs[0].zCoord,
+      vecs[0].yCoord + 1.5,
+      vecs[1].xCoord,
+      vecs[1].zCoord,
+      vecs[1].yCoord + 1.5,
+      MathUtils.distanceFromTo(vecs[0], vecs[1])
+    );
+
+    if (firstCollision != null) return false;
+
+    RayTracingUtils.CollisionResult secondCollision = RayTracingUtils.getCollisionBlock(
+      vecs[2].xCoord,
+      vecs[2].zCoord,
+      vecs[2].yCoord + 1.5,
+      vecs[3].xCoord,
+      vecs[3].zCoord,
+      vecs[3].yCoord + 1.5,
+      MathUtils.distanceFromTo(vecs[2], vecs[3])
+    );
+
+    if (secondCollision != null) return false;
+
+    RayTracingUtils.CollisionResult finalCollision = RayTracingUtils.getCollisionBlock(
+      start.xCoord,
+      start.zCoord,
+      start.yCoord + 1.5,
+      end.xCoord,
+      end.zCoord,
+      end.yCoord + 1.5,
+      MathUtils.distanceFromTo(vecs[2], vecs[3])
+    );
+
+    if (finalCollision != null) return false;
+
+    return true;
+  }
+
   public static List<Vec3> shortenList(List<Vec3> original) {
     List<Vec3> newReturn = new ArrayList<>();
     Vec3 curVector = original.get(0);
     original.remove(0);
 
-    for (Vec3 block : original) {}
+    for (int i = 0; i < original.size(); i++) {
+      Vec3 cur = original.get(i);
+      Vec3 prev = i - 1 < 0 ? null : original.get(i - 1);
 
-    return null;
+      if (!isAbleToWalkBetween(curVector, cur)) {
+        if (prev == null) {
+          newReturn.add(cur);
+        } else {
+          newReturn.add(prev);
+        }
+      }
+    }
+
+    return newReturn;
+  }
+
+  public static BlockPos fromVecToBP(Vec3 block) {
+    return new BlockPos(block.xCoord, block.yCoord, block.zCoord);
+  }
+
+  public static Vec3 fromBPToVec(BlockPos block) {
+    return new Vec3(block.getX(), block.getY(), block.getZ());
   }
 }

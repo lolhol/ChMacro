@@ -1,5 +1,6 @@
 package com.mit.util;
 
+import com.sun.javafx.geom.Vec2d;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.Vec3;
@@ -32,5 +33,28 @@ public class MathUtils {
     final double d1 = vec1.xCoord - vec2.xCoord;
     final double d2 = vec1.zCoord - vec2.zCoord;
     return MathHelper.sqrt_double(d1 * d1 + d2 * d2);
+  }
+
+  public static Vec3[] getFourPointsAbout(Vec3 vec1, Vec3 vec2, double distBetween) {
+    double d1 = vec2.xCoord - vec1.xCoord;
+    double d2 = vec2.zCoord - vec1.zCoord;
+
+    double dist = Math.sqrt(d1 * d1 + d2 * d2);
+
+    double revX = -d2;
+    double revY = d1;
+
+    double X = (revX / dist) * distBetween;
+    double Y = (revY / dist) * distBetween;
+
+    Vec3[] vecs = new Vec3[4];
+
+    vecs[0] = new Vec3(vec1.xCoord - X, vec1.yCoord, vec1.zCoord - Y);
+    vecs[1] = new Vec3(X + vec1.xCoord, vec1.yCoord, Y + vec1.zCoord);
+
+    vecs[2] = new Vec3(vec2.xCoord - X, vec2.yCoord, vec2.zCoord - Y);
+    vecs[3] = new Vec3(X + vec2.xCoord, vec2.yCoord, Y + vec2.zCoord);
+
+    return vecs;
   }
 }
