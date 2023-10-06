@@ -1,5 +1,6 @@
 package com.mit.features.mining;
 
+import com.mit.features.mining.hollows.GetMetalDetectorChestLoc;
 import com.mit.features.mining.hollows.MiningNuker;
 
 import java.util.ArrayList;
@@ -11,6 +12,7 @@ public class MiningFeatures {
 
   public MiningFeatures() {
     miningFeatures.add(new MiningNuker());
+    miningFeatures.add(new GetMetalDetectorChestLoc());
   }
 
   public List<Object> getMiningFeatures() {

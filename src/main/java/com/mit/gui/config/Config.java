@@ -3,6 +3,7 @@ package com.mit.gui.config;
 import gg.essential.vigilance.Vigilant;
 import gg.essential.vigilance.data.Property;
 import gg.essential.vigilance.data.PropertyType;
+
 import java.io.File;
 
 public class Config extends Vigilant {
@@ -11,9 +12,19 @@ public class Config extends Vigilant {
 
   @Property(
     type = PropertyType.SWITCH,
+    name = "Metal Detector Solver",
+    description = "What it seems. (gumtune's)",
+    category = "Mining",
+    subcategory = "QOL"
+  )
+  public static boolean metalDetectorSolver = false;
+
+  @Property(
+    type = PropertyType.SWITCH,
     name = "Nuker Master Switch",
     description = "The nuker master switch that turns the nuker on/off.",
-    category = "Nuker"
+    category = "Mining",
+    subcategory = "Nuker"
   )
   public static boolean nuker = false;
 
@@ -21,7 +32,8 @@ public class Config extends Vigilant {
     type = PropertyType.SWITCH,
     name = "Mode",
     description = "On = when you look at a block it breaks it | off = blocks around you are broken",
-    category = "Nuker"
+    category = "Mining",
+    subcategory = "Nuker"
   )
   public static boolean nukerMode = false;
 
@@ -29,7 +41,8 @@ public class Config extends Vigilant {
     type = PropertyType.SWITCH,
     name = "Dig Under",
     description = "Turn this off to not dig under player.",
-    category = "Nuker"
+    category = "Mining",
+    subcategory = "Nuker"
   )
   public static boolean isDigUnder = false;
 
@@ -37,7 +50,8 @@ public class Config extends Vigilant {
     type = PropertyType.SLIDER,
     name = "Nuker BPS",
     description = "dont set this too high and ur chilling",
-    category = "Nuker",
+    category = "Mining",
+    subcategory = "Nuker",
     min = 1,
     max = 80
   )
@@ -47,7 +61,8 @@ public class Config extends Vigilant {
     type = PropertyType.TEXT,
     name = "Nuker Blocks",
     description = "Put the blocks you want the nuker to break here IN THE FORM OF name,name NO SPACE BETWEEN , !",
-    category = "Nuker"
+    category = "Mining",
+    subcategory = "Nuker"
   )
   public static String nukerBlocks = "";
 
@@ -55,7 +70,8 @@ public class Config extends Vigilant {
     type = PropertyType.SLIDER,
     name = "Nuker Range",
     description = "dont set this too high and ur chilling",
-    category = "Nuker",
+    category = "Mining",
+    subcategory = "Nuker",
     min = 1,
     max = 4
   )

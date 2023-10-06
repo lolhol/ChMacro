@@ -1,19 +1,18 @@
 package com.mit.util;
 
 import com.mit.global.Dependencies;
-import com.sun.javafx.geom.Vec3d;
+import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.init.Blocks;
+import net.minecraft.util.BlockPos;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.util.Vec3;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
-import javafx.util.Pair;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockLiquid;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.EntityPlayerSP;
-import net.minecraft.init.Blocks;
-import net.minecraft.util.*;
 
 public class BlockUtils {
 
@@ -200,5 +199,19 @@ public class BlockUtils {
     }
 
     return block;
+  }
+
+  public static boolean isBlockSolid(BlockPos block) {
+    Block blockType = getBlockType(block);
+    return (
+      blockType != Blocks.water &&
+      blockType != Blocks.lava &&
+      blockType != Blocks.air &&
+      blockType != Blocks.red_flower &&
+      blockType != Blocks.tallgrass &&
+      blockType != Blocks.yellow_flower &&
+      blockType != Blocks.double_plant &&
+      blockType != Blocks.flowing_water
+    );
   }
 }
