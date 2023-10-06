@@ -2,13 +2,12 @@ package com.mit.features.pathfind.main;
 
 import com.dillo.pathfinding.mit.finder.utils.BlockNodeClass;
 import com.dillo.utils.renderUtils.RenderBox;
-import net.minecraft.util.BlockPos;
-import net.minecraftforge.client.event.RenderWorldLastEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
+import net.minecraft.util.BlockPos;
+import net.minecraftforge.client.event.RenderWorldLastEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public class OnPathRenderer {
 

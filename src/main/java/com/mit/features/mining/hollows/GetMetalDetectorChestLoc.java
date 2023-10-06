@@ -9,6 +9,10 @@ import com.mit.util.BlockUtils;
 import com.mit.util.ChatUtils;
 import com.mit.util.StringUtils;
 import gg.essential.api.utils.Multithreading;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.util.HashSet;
+import java.util.Objects;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.BlockPos;
@@ -16,11 +20,6 @@ import net.minecraft.util.Vec3;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.util.HashSet;
-import java.util.Objects;
 
 /*
       Not my code! Taken from GTC.

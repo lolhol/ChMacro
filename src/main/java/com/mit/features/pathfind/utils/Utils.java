@@ -1,15 +1,14 @@
 package com.mit.features.pathfind.utils;
 
 import com.mit.util.BlockUtils;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import net.minecraft.init.Blocks;
-import net.minecraft.util.BlockPos;
-
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import net.minecraft.init.Blocks;
+import net.minecraft.util.BlockPos;
 
 public class Utils {
 

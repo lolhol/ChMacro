@@ -3,14 +3,13 @@ package com.mit.features.pathfind.main;
 import com.mit.features.pathfind.utils.*;
 import com.mit.util.ChatUtils;
 import com.mit.util.renderModules.RenderMultipleBlocksMod;
-import net.minecraft.util.BlockPos;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent;
-
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.PriorityQueue;
+import net.minecraft.util.BlockPos;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent;
 
 public class AStarPathFinder {
 
