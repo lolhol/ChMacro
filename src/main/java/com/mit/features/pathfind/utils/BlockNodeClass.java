@@ -1,13 +1,15 @@
 package com.mit.features.pathfind.utils;
 
+import com.mit.util.BlockUtils;
 import java.util.HashSet;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import net.minecraft.util.BlockPos;
+import net.minecraft.util.Vec3;
 
 @Getter
 @AllArgsConstructor
-public class BlockNodeClass {
+public class BlockNodeClass extends BlockUtils {
 
   public BlockNodeClass parentOfBlock;
   public BlockPos blockPos;
@@ -41,5 +43,9 @@ public class BlockNodeClass {
 
   public Boolean isSame(BlockPos block) {
     return this.blockPos.equals(block);
+  }
+
+  public Vec3 getVec() {
+    return fromBPToVec(this.blockPos);
   }
 }

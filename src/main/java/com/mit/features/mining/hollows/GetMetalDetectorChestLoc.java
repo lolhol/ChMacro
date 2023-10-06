@@ -3,6 +3,8 @@ package com.mit.features.mining.hollows;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
+import com.mit.features.render.RenderMultipleBlocksMod;
+import com.mit.features.render.RenderOneBlockMod;
 import com.mit.global.Dependencies;
 import com.mit.gui.config.Config;
 import com.mit.util.BlockUtils;
@@ -62,6 +64,7 @@ public class GetMetalDetectorChestLoc {
   public void onActionBar(ClientChatReceivedEvent event) {
     if (!Config.metalDetectorSolver || Dependencies.mc.theWorld == null || Dependencies.mc.thePlayer == null) return;
     if (event.type != 2) return;
+
     String text = StringUtils.removeFormatting(event.message.getUnformattedText());
     if (text.contains("TREASURE")) {
       if (!lobbyInitialized && System.currentTimeMillis() - lastScan > 3000) {

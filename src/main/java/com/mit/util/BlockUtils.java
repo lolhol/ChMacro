@@ -216,39 +216,16 @@ public class BlockUtils {
 
   public static boolean isAbleToWalkBetween(Vec3 start, Vec3 end) {
     Vec3[] vecs = MathUtils.getFourPointsAbout(start, end, 0.5);
-    RayTracingUtils.CollisionResult firstCollision = RayTracingUtils.getCollisionBlock(
-      vecs[0].xCoord,
-      vecs[0].zCoord,
-      vecs[0].yCoord + 1.5,
-      vecs[1].xCoord,
-      vecs[1].zCoord,
-      vecs[1].yCoord + 1.5,
-      MathUtils.distanceFromTo(vecs[0], vecs[1])
-    );
+
+    MovingObjectPosition firstCollision = Dependencies.mc.theWorld.rayTraceBlocks(vecs[0], vecs[1], true, true, true);
 
     if (firstCollision != null) return false;
 
-    RayTracingUtils.CollisionResult secondCollision = RayTracingUtils.getCollisionBlock(
-      vecs[2].xCoord,
-      vecs[2].zCoord,
-      vecs[2].yCoord + 1.5,
-      vecs[3].xCoord,
-      vecs[3].zCoord,
-      vecs[3].yCoord + 1.5,
-      MathUtils.distanceFromTo(vecs[2], vecs[3])
-    );
+    MovingObjectPosition secondCollision = Dependencies.mc.theWorld.rayTraceBlocks(vecs[2], vecs[3], true, true, true);
 
     if (secondCollision != null) return false;
 
-    RayTracingUtils.CollisionResult finalCollision = RayTracingUtils.getCollisionBlock(
-      start.xCoord,
-      start.zCoord,
-      start.yCoord + 1.5,
-      end.xCoord,
-      end.zCoord,
-      end.yCoord + 1.5,
-      MathUtils.distanceFromTo(vecs[2], vecs[3])
-    );
+    MovingObjectPosition finalCollision = Dependencies.mc.theWorld.rayTraceBlocks(start, end, true, true, true);
 
     if (finalCollision != null) return false;
 
@@ -264,14 +241,51 @@ public class BlockUtils {
       Vec3 cur = original.get(i);
       Vec3 prev = i - 1 < 0 ? null : original.get(i - 1);
 
+      /*
+      List<RayTracingUtils.CollisionResult> blocksIntersected = RayTracingUtils.getCollisionVecsList(
+        curVector.xCoord + 0.5,
+        curVector.yCoord - 1.5,
+        curVector.zCoord + 0.5,
+        cur.xCoord,
+        cur.yCoord - 1.5,
+        cur.zCoord,
+        MathUtils.distanceFromTo(curVector, cur)
+      );
+
+      if (blocksIntersected != null) {
+        int airAmount = 0;
+        for (RayTracingUtils.CollisionResult block : blocksIntersected) {
+          Block blockType = BlockUtils.getBlockType(block.blockPos);
+          if (blockType == Blocks.air) {
+            airAmount++;
+          }
+        }
+
+        if (airAmount > 2) {
+          if (prev == null) {
+            newReturn.add(cur);
+          } else {
+            newReturn.add(prev);
+          }
+
+          curVector = cur;
+
+          continue;
+        }
+      }*/
+
       if (!isAbleToWalkBetween(curVector, cur)) {
         if (prev == null) {
           newReturn.add(cur);
         } else {
           newReturn.add(prev);
         }
+
+        curVector = cur;
       }
     }
+
+    newReturn.add(original.get(original.size() - 1));
 
     return newReturn;
   }
@@ -283,4 +297,105 @@ public class BlockUtils {
   public static Vec3 fromBPToVec(BlockPos block) {
     return new Vec3(block.getX(), block.getY(), block.getZ());
   }
+  /*public static List<BlockPos> getShortList(List<BlockNodeClass> blocks) {
+    boolean added = false;
+
+    List<BlockPos> returnBlocks = new ArrayList<>();
+    blocks.remove(0);
+    BlockPos curBlock = BlockUtils.getCenteredBlock(blocks.get(0).blockPos);
+    //returnBlocks.add(curBlock);
+
+    List<Vec3> pointList = new ArrayList<>();
+    pointList.add(new Vec3(BlockSideVecs.LEFT.dx, 0, BlockSideVecs.LEFT.dz));
+    pointList.add(new Vec3(BlockSideVecs.RIGHT.dx, 0, BlockSideVecs.RIGHT.dz));
+    pointList.add(new Vec3(BlockSideVecs.BACKLEFT.dx, 0, BlockSideVecs.BACKLEFT.dz));
+    pointList.add(new Vec3(BlockSideVecs.BACKRIGHT.dx, 0, BlockSideVecs.BACKRIGHT.dz));
+    pointList.add(new Vec3(0, 0, 0));
+
+    int curCount = 0;
+    for (int i = 1; i < blocks.size(); i++) {
+      BlockNodeClass curBlockClassNode = blocks.get(i);
+      BlockPos curBlockArList = blocks.get(i).blockPos;
+      BlockPos centered = BlockUtils.getCenteredBlock(curBlockArList);
+
+      List<RayTracingUtils.CollisionResult> blocksIntersected = RayTracingUtils.getCollisionVecsList(
+        curBlock.getX() + 0.5,
+        curBlock.getY() - 1.5,
+        curBlock.getZ() + 0.5,
+        centered.getX(),
+        centered.getY() - 1.5,
+        centered.getZ(),
+        DistanceFromTo.distanceFromTo(curBlock, centered)
+      );
+
+      if (blocksIntersected != null) {
+        int airAmount = 0;
+        for (RayTracingUtils.CollisionResult block : blocksIntersected) {
+          Block blockType = BlockUtils.getBlockType(block.blockPos);
+          if (blockType == Blocks.air) {
+            airAmount++;
+          }
+        }
+
+        //SendChat.chat(String.valueOf(airAmount));
+
+        if (airAmount > 2) {
+          returnBlocks.add(blocks.get(i - 1).blockPos);
+          curBlock = blocks.get(i - 1).blockPos;
+          curCount = 0;
+          continue;
+        }
+      }
+
+      if (added) {
+        added = false;
+        returnBlocks.add(blocks.get(i - 1).blockPos);
+        curBlock = blocks.get(i - 1).blockPos;
+      }
+
+      for (Vec3 vec : pointList) {
+        Vec3 cur = new Vec3(
+          curBlockArList.getX() + vec.xCoord + 0.5,
+          curBlockArList.getY() + 1.1,
+          curBlockArList.getZ() + vec.zCoord + 0.5
+        );
+
+        //RenderMultipleBlocksMod.renderMultipleBlocks(BlockUtils.fromBlockPosToVec3(curBlockArList), true);
+
+        Vec3 vec3 = new Vec3(
+          curBlock.getX() + vec.xCoord + 0.5,
+          curBlock.getY() + 1.1,
+          curBlock.getZ() + vec.zCoord + 0.5
+        );
+
+        MovingObjectPosition obj = ids.mc.theWorld.rayTraceBlocks(vec3, cur, true, true, true);
+
+        //RenderPoints.renderPoint(vec3, 0.2, true);
+
+        if (
+          (obj != null && !obj.hitVec.equals(cur)) ||
+          curBlockClassNode.actionType == ActionTypes.BREAK ||
+          curBlockClassNode.actionType == ActionTypes.JUMP
+        ) {
+          returnBlocks.add(blocks.get(i - 1).blockPos);
+          curBlock = blocks.get(i - 1).blockPos;
+
+          curCount = 0;
+          break;
+        }
+      }
+      /*if (curCount >= 4) {
+        curCount = 0;
+        returnBlocks.add(blocks.get(i - 1).blockPos);
+        curBlock = blocks.get(i - 1).blockPos;
+        continue;
+      }
+
+      curCount++;
+    }
+
+    returnBlocks.add(blocks.get(blocks.size() - 1).blockPos);
+
+    return returnBlocks;
+  }*/
 }

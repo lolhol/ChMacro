@@ -8,10 +8,7 @@ import com.mit.features.Features;
 import com.mit.features.mining.MiningFeatures;
 import com.mit.features.mining.hollows.GetMetalDetectorChestLoc;
 import com.mit.features.mining.hollows.MiningNuker;
-import com.mit.features.render.RenderModules;
-import com.mit.features.render.RenderMultipleLines;
-import com.mit.features.render.RenderPoints;
-import com.mit.features.render.RenderSingleLineTwoPoints;
+import com.mit.features.render.*;
 import gg.essential.api.EssentialAPI;
 import gg.essential.api.commands.Command;
 import java.io.File;
@@ -50,7 +47,8 @@ public class MIT {
       new RenderPoints(),
       new MiningNuker(),
       new GetMetalDetectorChestLoc(),
-      new RenderMultipleLines()
+      new RenderMultipleLines(),
+      new RenderMultipleBlocksMod()
     );
   }
 

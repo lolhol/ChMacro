@@ -1,11 +1,10 @@
 package com.mit.features.pathfind.walker;
 
 import com.mit.event.MsEvent;
-import net.minecraft.util.Vec3;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-
 import java.util.ArrayList;
 import java.util.List;
+import net.minecraft.util.Vec3;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public class WalkerMain {
 
@@ -13,8 +12,8 @@ public class WalkerMain {
   List<Vec3> curPath = new ArrayList<>();
   Vec3 curVec = null;
 
-  public void run(List<Vec3> path) {
-    state = !state;
+  public void run(List<Vec3> path, boolean walkState) {
+    state = walkState;
     curPath = path;
     curVec = path.get(0);
     path.remove(0);
@@ -22,7 +21,6 @@ public class WalkerMain {
 
   @SubscribeEvent
   public void onMillisecond(MsEvent event) {
-    if (!state) {
-    }
+    if (!state) return;
   }
 }

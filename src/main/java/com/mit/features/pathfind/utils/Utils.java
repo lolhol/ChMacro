@@ -10,15 +10,15 @@ import lombok.Getter;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.BlockPos;
 
-public class Utils {
+public class Utils extends Costs {
 
   public static BlockNodeClass getClassOfStarting(BlockPos startingBlock, BlockPos endBlock) {
     return new BlockNodeClass(
       null,
       startingBlock,
-      Costs.calculateGCostBlockPos(startingBlock, startingBlock),
-      Costs.calculateHCostBlockPos(startingBlock, endBlock),
-      Costs.getFullCost(startingBlock, startingBlock, endBlock),
+      calculateGCostBlockPos(startingBlock, startingBlock),
+      calculateHCostBlockPos(startingBlock, endBlock),
+      getFullCost(startingBlock, startingBlock, endBlock),
       null,
       new HashSet<>()
     );
@@ -28,9 +28,9 @@ public class Utils {
     return new BlockNodeClass(
       null,
       endBlock,
-      Costs.calculateGCostBlockPos(startingBlock, endBlock),
-      Costs.calculateHCostBlockPos(endBlock, endBlock),
-      Costs.getFullCost(endBlock, startingBlock, endBlock),
+      calculateGCostBlockPos(startingBlock, endBlock),
+      calculateHCostBlockPos(endBlock, endBlock),
+      getFullCost(endBlock, startingBlock, endBlock),
       null,
       new HashSet<>()
     );
@@ -48,9 +48,9 @@ public class Utils {
     return new BlockNodeClass(
       parent,
       block,
-      Costs.calculateGCostBlockPos(block, starting),
-      Costs.calculateHCostBlockPos(block, ending),
-      Costs.getFullCost(block, starting, ending),
+      calculateGCostBlockPos(block, starting),
+      calculateHCostBlockPos(block, ending),
+      getFullCost(block, starting, ending),
       null,
       addBroken
     );

@@ -8,10 +8,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.PriorityQueue;
 import net.minecraft.util.BlockPos;
+import net.minecraft.util.Vec3;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 
-public class AStarPathFinder {
+public class AStarPathFinder extends Utils {
 
   public static HashSet<BlockNodeClass> closedSet = new HashSet<>();
 
@@ -97,12 +98,12 @@ public class AStarPathFinder {
         double totalAddBreak = 0;
         if (pathFinderConfig.isMine && typeAction.blocksToBreak != null) {
           for (BlockPos block : typeAction.blocksToBreak) {
-            totalAddBreak += Costs.getBreakCost(block);
+            totalAddBreak += getBreakCost(block);
           }
         }
 
-        child.hCost += Costs.getActionCost(child.actionType);
-        child.totalCost = Costs.getFullCost(child.blockPos, startBlock, endBlock) + totalAddBreak;
+        child.hCost += getActionCost(child.actionType);
+        child.totalCost = getFullCost(child.blockPos, startBlock, endBlock) + totalAddBreak;
         openSet.add(child);
       }
 
@@ -113,6 +114,16 @@ public class AStarPathFinder {
     isStart = false;
     //SendChat.chat("!!!" + openSet.size());
     return null;
+  }
+
+  public List<Vec3> fromClassToVec(List<BlockNodeClass> blockNode) {
+    List<Vec3> returnList = new ArrayList<>();
+
+    for (BlockNodeClass block : blockNode) {
+      returnList.add(block.getVec());
+    }
+
+    return returnList;
   }
 
   @SubscribeEvent

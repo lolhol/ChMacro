@@ -42,6 +42,8 @@ public class MiningNuker {
 
     if (timeBeforeReNuke >= 2000) {
       this.alrBroken.clear();
+    } else {
+      timeBeforeReNuke++;
     }
 
     if (nukerTickCount >= 1000 / Config.nukerBPS) {
