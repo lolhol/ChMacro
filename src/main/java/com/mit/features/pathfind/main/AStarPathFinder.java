@@ -1,17 +1,20 @@
 package com.mit.features.pathfind.main;
 
 import com.mit.features.pathfind.utils.*;
+import com.mit.features.render.RenderMultipleBlocksMod;
 import com.mit.util.ChatUtils;
-import com.mit.util.renderModules.RenderMultipleBlocksMod;
+import com.mit.util.MathUtils;
+import net.minecraft.util.BlockPos;
+import net.minecraft.util.Vec3;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.PriorityQueue;
-import net.minecraft.util.BlockPos;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent;
 
-public class AStarPathFinder {
+public class AStarPathFinder extends Utils {
 
   public static HashSet<BlockNodeClass> closedSet = new HashSet<>();
 
@@ -32,6 +35,7 @@ public class AStarPathFinder {
 
     PriorityQueue<BlockNodeClass> openSet = new PriorityQueue<>(new BlockNodeCompare());
     closedSet = new HashSet<>();
+    HashSet<BlockNodeClass> openList = new HashSet<>();
 
     BlockNodeClass previousNode = null;
     BlockNodeClass startPoint = Utils.getClassOfStarting(
@@ -80,6 +84,7 @@ public class AStarPathFinder {
       for (BlockNodeClass child : children) {
         if (closedSet.contains(child)) {
           openSet.remove(child);
+          openList.remove(child);
           continue;
         }
 
@@ -97,13 +102,24 @@ public class AStarPathFinder {
         double totalAddBreak = 0;
         if (pathFinderConfig.isMine && typeAction.blocksToBreak != null) {
           for (BlockPos block : typeAction.blocksToBreak) {
-            totalAddBreak += Costs.getBreakCost(block);
+            totalAddBreak += getBreakCost(block);
           }
         }
 
-        child.hCost += Costs.getActionCost(child.actionType);
-        child.totalCost = Costs.getFullCost(child.blockPos, startBlock, endBlock) + totalAddBreak;
-        openSet.add(child);
+        double newGCost =
+          child.parentOfBlock.gCost + MathUtils.distanceFromTo(child.blockPos, child.parentOfBlock.blockPos);
+        if (!openList.contains(child) || newGCost < child.gCost) {
+          child.totalCost =
+            child.hCost +
+            child.gCost +
+            Costs.getActionCost(child.actionType, child.hCost + child.gCost) +
+            Costs.calcOtherTotalCost(child.blockPos);
+          //child.otherTotalCost = Costs.calcOtherTotalCost(child.blockPos);
+          //ChatUtils.chat(String.valueOf(child.otherTotalCost));
+
+          openList.add(child);
+          openSet.add(child);
+        }
       }
 
       previousNode = node;
@@ -111,8 +127,17 @@ public class AStarPathFinder {
     }
 
     isStart = false;
-    //SendChat.chat("!!!" + openSet.size());
     return null;
+  }
+
+  public List<Vec3> fromClassToVec(List<BlockNodeClass> blockNode) {
+    List<Vec3> returnList = new ArrayList<>();
+
+    for (BlockNodeClass block : blockNode) {
+      returnList.add(block.getVec());
+    }
+
+    return returnList;
   }
 
   @SubscribeEvent

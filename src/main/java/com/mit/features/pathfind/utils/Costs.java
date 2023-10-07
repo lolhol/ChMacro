@@ -27,6 +27,11 @@ public class Costs {
     return MathUtils.distanceFromTo(pos1, finalBlock);
   }
 
+  public static double calcOtherTotalCost(BlockPos pos) {
+    // Calc random costs like surrounding etc.
+    return Utils.calculateSurroundingsDoubleCost(pos);
+  }
+
   public static double calculateFullCostDistance(BlockPos pos1, BlockPos startBlock, BlockPos finalBlock) {
     return calculateGCostBlockPos(pos1, startBlock) + calculateHCostBlockPos(pos1, finalBlock);
   }
@@ -40,14 +45,14 @@ public class Costs {
     );
   }
 
-  public static double getActionCost(ActionTypes action) {
+  public static double getActionCost(ActionTypes action, double totalCost) {
     switch (action) {
       case WALK:
         return 1;
       case JUMP:
-        return 2;
+        return totalCost / 3;
       case FALL:
-        return 3;
+        return totalCost / 4;
       case BREAK:
         return 10;
     }
@@ -55,10 +60,9 @@ public class Costs {
     return 0;
   }
 
-  public static double calculateSurroundingsDoubleCost(BlockPos block) {
-    Iterable<BlockPos> blocks = BlockPos.getAllInBox(block.add(-4, 0, -4), block.add(4, 1, 4));
-    //double percent = BlockUtils.getPercentOfNonAir(blocks);
-    return 0.4;
+  public static int calculateSurroundingsDoubleCost(BlockPos block) {
+    Iterable<BlockPos> blocks = BlockPos.getAllInBox(block.add(-2, 0, -2), block.add(2, 1, 2));
+    return BlockUtils.amountAir(blocks);
   }
 
   public static double getBreakCost(BlockPos block) {

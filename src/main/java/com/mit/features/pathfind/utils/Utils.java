@@ -1,24 +1,25 @@
 package com.mit.features.pathfind.utils;
 
 import com.mit.util.BlockUtils;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import net.minecraft.util.BlockPos;
+
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import net.minecraft.init.Blocks;
-import net.minecraft.util.BlockPos;
 
-public class Utils {
+public class Utils extends Costs {
 
   public static BlockNodeClass getClassOfStarting(BlockPos startingBlock, BlockPos endBlock) {
     return new BlockNodeClass(
       null,
       startingBlock,
-      Costs.calculateGCostBlockPos(startingBlock, startingBlock),
-      Costs.calculateHCostBlockPos(startingBlock, endBlock),
-      Costs.getFullCost(startingBlock, startingBlock, endBlock),
+      calculateGCostBlockPos(startingBlock, startingBlock),
+      calculateHCostBlockPos(startingBlock, endBlock),
+      0,
+      getFullCost(startingBlock, startingBlock, endBlock),
       null,
       new HashSet<>()
     );
@@ -28,9 +29,10 @@ public class Utils {
     return new BlockNodeClass(
       null,
       endBlock,
-      Costs.calculateGCostBlockPos(startingBlock, endBlock),
-      Costs.calculateHCostBlockPos(endBlock, endBlock),
-      Costs.getFullCost(endBlock, startingBlock, endBlock),
+      calculateGCostBlockPos(startingBlock, endBlock),
+      calculateHCostBlockPos(endBlock, endBlock),
+      0,
+      getFullCost(endBlock, startingBlock, endBlock),
       null,
       new HashSet<>()
     );
@@ -48,9 +50,10 @@ public class Utils {
     return new BlockNodeClass(
       parent,
       block,
-      Costs.calculateGCostBlockPos(block, starting),
-      Costs.calculateHCostBlockPos(block, ending),
-      Costs.getFullCost(block, starting, ending),
+      calculateGCostBlockPos(block, starting),
+      calculateHCostBlockPos(block, ending),
+      calcOtherTotalCost(block),
+      getFullCost(block, starting, ending),
       null,
       addBroken
     );
@@ -65,12 +68,13 @@ public class Utils {
           if (x == 0 || z == 0) {
             BlockPos curBlock = reference.blockPos.add(x, y, z);
 
-            returnBlocks.add(getClassOfBlock(curBlock, reference, start, end, reference.broken));
-
-            while (y == -1 && !BlockUtils.isBlockSolid(curBlock.add(0, -1, 0))) {
-              curBlock = reference.blockPos.add(0, -1, 0);
+            if (!BlockUtils.isBlockSolid(curBlock)) {
               returnBlocks.add(getClassOfBlock(curBlock, reference, start, end, reference.broken));
             }
+            /*while (y == -1 && !BlockUtils.isBlockSolid(curBlock.add(0, -1, 0))) {
+              curBlock = reference.blockPos.add(0, -1, 0);
+              returnBlocks.add(getClassOfBlock(curBlock, reference, start, end, reference.broken));
+            }*/
           }
         }
       }
@@ -110,38 +114,11 @@ public class Utils {
   }
 
   public static ReturnClass isAbleToInteract(BlockPos block, BlockNodeClass parentBlock, boolean isMine) {
-    List<BlockPos> removeBlocksWalk = canWalkOn(block, parentBlock);
-    if (removeBlocksWalk != null && removeBlocksWalk.isEmpty()) {
-      return new ReturnClass(removeBlocksWalk, ActionTypes.WALK);
-    }
+    if (canWalkOn(block, parentBlock)) return new ReturnClass(new ArrayList<>(), ActionTypes.WALK);
 
-    List<BlockPos> removeBlocksJump = canJumpOn(block, parentBlock);
-    if (removeBlocksJump != null && removeBlocksJump.isEmpty()) {
-      return new ReturnClass(removeBlocksJump, ActionTypes.JUMP);
-    }
+    if (canJumpOn(block, parentBlock)) return new ReturnClass(new ArrayList<>(), ActionTypes.JUMP);
 
-    List<BlockPos> removeBlocksFall = canFall(block, parentBlock);
-    if (removeBlocksFall != null && removeBlocksFall.isEmpty()) {
-      return new ReturnClass(removeBlocksFall, ActionTypes.FALL);
-    }
-
-    if (isMine) {
-      List<List<BlockPos>> combined = new ArrayList<>();
-
-      if (removeBlocksWalk != null) combined.add(removeBlocksWalk);
-      if (removeBlocksJump != null) combined.add(removeBlocksJump);
-      if (removeBlocksFall != null) combined.add(removeBlocksFall);
-
-      List<BlockPos> min = null;
-
-      if (!combined.isEmpty()) {
-        min = getTheMinList(combined);
-      }
-
-      if (min == null) return null;
-
-      return new ReturnClass(removeBlocksFall, ActionTypes.BREAK);
-    }
+    if (canFall(block, parentBlock)) return new ReturnClass(new ArrayList<>(), ActionTypes.FALL);
 
     return null;
   }
@@ -158,67 +135,40 @@ public class Utils {
     public ActionTypes actionType;
   }
 
-  public static List<BlockPos> canWalkOn(BlockPos block, BlockNodeClass parent) {
-    double yDif = Math.abs(block.getY() - parent.blockPos.getY());
-    List<BlockPos> blocksToBeRemoved = new ArrayList<>();
+  public static boolean canWalkOn(BlockPos block, BlockNodeClass parent) {
+    double yDif = Math.abs(parent.blockPos.getY() - block.getY());
 
-    if (
-      BlockUtils.isBlockSolid(block) && !parent.broken.contains(block) // &&
-      //!BlockUtils.getBlock(block).getRegistryName().toLowerCase().contains("slab")
-    ) blocksToBeRemoved.add(block);
+    BlockPos blockAbove1 = block.add(0, 1, 0);
+    BlockPos blockBelow1 = block.add(0, -1, 0);
 
-    BlockPos block1 = block.add(0, 1, 0);
-    if (BlockUtils.isBlockSolid(block1) && !parent.broken.contains(block1)) blocksToBeRemoved.add(block1);
+    return (yDif <= 0.001 && !BlockUtils.isBlockSolid(blockAbove1) && BlockUtils.isBlockSolid(blockBelow1));
+  }
 
-    BlockPos block2 = block.add(0, -1, 0);
+  public static boolean canJumpOn(BlockPos block, BlockNodeClass parentBlock) {
+    double yDiff = block.getY() - parentBlock.blockPos.getY();
+
+    BlockPos blockAbove1 = block.add(0, 1, 0);
+    BlockPos blockBelow1 = block.add(0, -1, 0);
+
+    BlockPos blockAboveOneParent = parentBlock.blockPos.add(0, 1, 0);
+    BlockPos blockAboveTwoParent = parentBlock.blockPos.add(0, 2, 0);
 
     return (
-      yDif <= 0.001 && BlockUtils.isBlockSolid(block2) && !parent.broken.contains(block2) ? blocksToBeRemoved : null
+      yDiff == 1 &&
+      BlockUtils.isBlockSolid(blockBelow1) &&
+      !BlockUtils.isBlockSolid(blockAbove1) &&
+      !BlockUtils.isBlockSolid(blockAboveOneParent) &&
+      !BlockUtils.isBlockSolid(blockAboveTwoParent)
     );
   }
 
-  public static List<BlockPos> canJumpOn(BlockPos block, BlockNodeClass parentBlock) {
-    double yDiff = block.getY() - parentBlock.blockPos.getY();
-    List<BlockPos> blocksToBeRemoved = new ArrayList<>();
-
-    if (BlockUtils.isBlockSolid(block) && !parentBlock.broken.contains(block)) blocksToBeRemoved.add(block);
-
-    BlockPos block1 = block.add(0, 1, 0);
-    if (BlockUtils.isBlockSolid(block1) && !parentBlock.broken.contains(block1)) blocksToBeRemoved.add(block1);
-
-    BlockPos block2 = parentBlock.blockPos.add(0, 1, 0);
-    if (BlockUtils.isBlockSolid(block2) && !parentBlock.broken.contains(block2)) blocksToBeRemoved.add(block2);
-
-    BlockPos block3 = parentBlock.blockPos.add(0, 2, 0);
-    if (BlockUtils.isBlockSolid(block3) && !parentBlock.broken.contains(block3)) blocksToBeRemoved.add(block3);
-
-    BlockPos block4 = block.add(0, -1, 0);
-    return (
-      yDiff == 1 && BlockUtils.isBlockSolid(block4) && !parentBlock.broken.contains(block4) ? blocksToBeRemoved : null
-    );
-  }
-
-  public static List<BlockPos> canFall(BlockPos block, BlockNodeClass parentBlock) {
+  public static boolean canFall(BlockPos block, BlockNodeClass parentBlock) {
     double yDiff = block.getY() - parentBlock.blockPos.getY();
 
-    List<BlockPos> blocksToBeRemoved = new ArrayList<>();
+    BlockPos blockBelow1 = block.add(0, -1, 0);
+    BlockPos blockAbove1 = block.add(0, 1, 0);
 
-    if (BlockUtils.isBlockSolid(block) && !parentBlock.broken.contains(block)) blocksToBeRemoved.add(block);
-
-    BlockPos block1 = new BlockPos(block.getX(), parentBlock.blockPos.getY() + 1, block.getZ());
-    if (BlockUtils.isBlockSolid(block1) && !parentBlock.broken.contains(block1)) blocksToBeRemoved.add(block1);
-
-    BlockPos block2 = block.add(0, -1, 0);
-
-    return (
-      yDiff < 0 &&
-        yDiff > -4 &&
-        BlockUtils.isBlockSolid(block2) &&
-        !parentBlock.broken.contains(block2) &&
-        BlockUtils.getBlockType(block) == Blocks.air
-        ? blocksToBeRemoved
-        : null
-    );
+    return (yDiff < 0 && yDiff > -4 && BlockUtils.isBlockSolid(blockBelow1) && !BlockUtils.isBlockSolid(blockAbove1));
   }
 
   public static boolean isAllClearToY(int y1, int y2, BlockPos block) {

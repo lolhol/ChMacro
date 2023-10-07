@@ -4,17 +4,16 @@ import com.mit.event.MsEvent;
 import com.mit.global.Dependencies;
 import com.mit.gui.config.Config;
 import com.mit.util.BlockUtils;
-import com.mit.util.ChatUtils;
 import com.mit.util.PacketUtils;
 import com.mit.util.Render;
+import net.minecraft.util.BlockPos;
+import net.minecraftforge.client.event.RenderWorldLastEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import net.minecraft.util.BlockPos;
-import net.minecraftforge.client.event.RenderWorldLastEvent;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public class MiningNuker {
 
@@ -42,6 +41,8 @@ public class MiningNuker {
 
     if (timeBeforeReNuke >= 2000) {
       this.alrBroken.clear();
+    } else {
+      timeBeforeReNuke++;
     }
 
     if (nukerTickCount >= 1000 / Config.nukerBPS) {

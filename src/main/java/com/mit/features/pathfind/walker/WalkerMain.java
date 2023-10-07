@@ -13,8 +13,8 @@ public class WalkerMain {
   List<Vec3> curPath = new ArrayList<>();
   Vec3 curVec = null;
 
-  public void run(List<Vec3> path) {
-    state = !state;
+  public void run(List<Vec3> path, boolean walkState) {
+    state = walkState;
     curPath = path;
     curVec = path.get(0);
     path.remove(0);

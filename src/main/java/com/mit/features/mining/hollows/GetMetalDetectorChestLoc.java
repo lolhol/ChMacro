@@ -9,10 +9,6 @@ import com.mit.util.BlockUtils;
 import com.mit.util.ChatUtils;
 import com.mit.util.StringUtils;
 import gg.essential.api.utils.Multithreading;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.util.HashSet;
-import java.util.Objects;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.BlockPos;
@@ -20,6 +16,11 @@ import net.minecraft.util.Vec3;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.util.HashSet;
+import java.util.Objects;
 
 /*
       Not my code! Taken from GTC.
@@ -62,6 +63,7 @@ public class GetMetalDetectorChestLoc {
   public void onActionBar(ClientChatReceivedEvent event) {
     if (!Config.metalDetectorSolver || Dependencies.mc.theWorld == null || Dependencies.mc.thePlayer == null) return;
     if (event.type != 2) return;
+
     String text = StringUtils.removeFormatting(event.message.getUnformattedText());
     if (text.contains("TREASURE")) {
       if (!lobbyInitialized && System.currentTimeMillis() - lastScan > 3000) {

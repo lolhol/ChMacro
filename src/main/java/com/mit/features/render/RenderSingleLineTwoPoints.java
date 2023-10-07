@@ -1,10 +1,11 @@
-package com.mit.util.renderModules;
+package com.mit.features.render;
 
 import com.mit.util.Render;
-import java.awt.*;
 import net.minecraft.util.Vec3;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+
+import java.awt.*;
 
 public class RenderSingleLineTwoPoints {
 
