@@ -3,6 +3,8 @@ package com.mit.features.mining.hollows;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
+import com.mit.features.render.RenderMultipleBlocksMod;
+import com.mit.features.render.RenderOneBlockMod;
 import com.mit.global.Dependencies;
 import com.mit.gui.config.Config;
 import com.mit.util.BlockUtils;
