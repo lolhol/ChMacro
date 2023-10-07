@@ -1,12 +1,11 @@
 package com.mit.features.pathfind.utils;
 
 import com.mit.util.BlockUtils;
+import java.util.HashSet;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.Vec3;
-
-import java.util.HashSet;
 
 @Getter
 @AllArgsConstructor

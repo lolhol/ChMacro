@@ -8,12 +8,11 @@ import com.mit.util.BlockUtils;
 import com.mit.util.ChatUtils;
 import gg.essential.api.commands.Command;
 import gg.essential.api.commands.DefaultHandler;
+import java.util.List;
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.Vec3;
-
-import java.util.List;
 
 public class test extends Command {
 

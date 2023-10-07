@@ -2,7 +2,6 @@ package com.mit.features;
 
 import com.mit.features.mining.MiningFeatures;
 import com.mit.features.render.RenderModules;
-
 import java.util.ArrayList;
 import java.util.List;
 

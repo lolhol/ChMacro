@@ -1,11 +1,10 @@
 package com.mit.features.pathfind.walker;
 
 import com.mit.event.MsEvent;
-import net.minecraft.util.Vec3;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-
 import java.util.ArrayList;
 import java.util.List;
+import net.minecraft.util.Vec3;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public class WalkerMain {
 
