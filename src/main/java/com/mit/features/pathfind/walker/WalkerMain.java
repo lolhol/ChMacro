@@ -22,7 +22,6 @@ public class WalkerMain {
 
   @SubscribeEvent
   public void onMillisecond(MsEvent event) {
-    if (!state) {
-    }
+    if (!state) {}
   }
 }

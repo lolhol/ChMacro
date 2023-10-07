@@ -259,7 +259,7 @@ public class BlockUtils {
 
     MovingObjectPosition finalCollision = Dependencies.mc.theWorld.rayTraceBlocks(start, end, true, true, true);
 
-      return finalCollision == null;
+    return finalCollision == null;
   }
 
   public static List<Vec3> shortenList(List<Vec3> original) {
