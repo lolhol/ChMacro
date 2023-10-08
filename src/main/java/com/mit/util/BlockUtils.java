@@ -1,10 +1,8 @@
 package com.mit.util;
 
+import com.mit.features.render.RenderPoints;
 import com.mit.global.Dependencies;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
@@ -201,6 +199,24 @@ public class BlockUtils {
     return block;
   }
 
+  public static BlockPos getClosest(List<BlockPos> blocks, HashSet<BlockPos> broken, BlockPos around) {
+    double curClosest = 9999;
+    BlockPos block = null;
+
+    for (BlockPos pos : blocks) {
+      if (!broken.contains(pos)) {
+        double distance = MathUtils.distanceFromTo(pos, around);
+
+        if (distance < curClosest) {
+          curClosest = distance;
+          block = pos;
+        }
+      }
+    }
+
+    return block;
+  }
+
   public static double percentNonAir(Iterable<BlockPos> blocks) {
     AtomicInteger air = new AtomicInteger();
     AtomicInteger nonAir = new AtomicInteger();
@@ -220,15 +236,19 @@ public class BlockUtils {
     }
   }
 
-  public static int amountAir(Iterable<BlockPos> blocks) {
+  public static int amountNonAir(Iterable<BlockPos> blocks) {
     AtomicInteger air = new AtomicInteger();
     blocks.forEach(i -> {
-      if (getBlockType(i) != Blocks.air) {
+      if (!isBlockWalkable(i)) {
         air.getAndIncrement();
       }
     });
 
     return air.get();
+  }
+
+  public static Vec3 getCenteredVec(Vec3 init) {
+    return init.addVector(0.5, 0, 0.5);
   }
 
   public static boolean isBlockSolid(BlockPos block) {
@@ -245,23 +265,71 @@ public class BlockUtils {
     );
   }
 
+  public static boolean isBlockWalkable(BlockPos block) {
+    Block blockType = getBlockType(block);
+    return (
+      blockType == Blocks.air ||
+      blockType == Blocks.red_flower ||
+      blockType == Blocks.tallgrass ||
+      blockType == Blocks.yellow_flower ||
+      blockType == Blocks.double_plant
+    );
+  }
+
   public static boolean isAbleToWalkBetween(Vec3 start, Vec3 end) {
-    Vec3[] vecs = MathUtils.getFourPointsAbout(start, end, 0.5);
+    Vec3[] vecs = MathUtils.getFourPointsAbout(start.addVector(0.5, 0.5, 0.5), end.addVector(0.5, 0.5, 0.5), 0.4);
 
-    MovingObjectPosition firstCollision = Dependencies.mc.theWorld.rayTraceBlocks(vecs[0], vecs[1], true, true, true);
+    Vec3[] vecs2 = MathUtils.getFourPointsAbout(start.addVector(0.5, 1, 0.5), end.addVector(0.5, 1, 0.5), 0.4);
 
-    if (firstCollision != null) return false;
+    for (Vec3 vec : vecs2) {
+      RenderPoints.renderPoint(vec, 0.1, true);
+    }
 
-    MovingObjectPosition secondCollision = Dependencies.mc.theWorld.rayTraceBlocks(vecs[2], vecs[3], true, true, true);
+    //ChatUtils.chat(String.valueOf(finalCollision));
 
-    if (secondCollision != null) return false;
+    boolean result = rayTraceVecs(vecs) && rayTraceVecs(vecs2);
 
-    MovingObjectPosition finalCollision = Dependencies.mc.theWorld.rayTraceBlocks(start, end, true, true, true);
+    ChatUtils.chat(String.valueOf(result));
 
-    return finalCollision == null;
+    return result;
+  }
+
+  public static boolean rayTraceVecs(Vec3[] vecs) {
+    RayTracingUtils.CollisionResult firstCollision = RayTracingUtils.getCollisionVecs(
+      vecs[0].xCoord,
+      vecs[0].yCoord,
+      vecs[0].zCoord,
+      vecs[1].xCoord,
+      vecs[1].yCoord,
+      vecs[1].zCoord,
+      MathUtils.distanceFromTo(vecs[1], vecs[0]),
+      new Block[] { Blocks.air, Blocks.tallgrass, Blocks.double_plant }
+    );
+
+    RayTracingUtils.CollisionResult secondCollision = RayTracingUtils.getCollisionVecs(
+      vecs[2].xCoord,
+      vecs[2].yCoord,
+      vecs[2].zCoord,
+      vecs[3].xCoord,
+      vecs[3].yCoord,
+      vecs[3].zCoord,
+      MathUtils.distanceFromTo(vecs[2], vecs[3]),
+      new Block[] { Blocks.air, Blocks.tallgrass, Blocks.double_plant }
+    );
+
+    /*ChatUtils.chat(
+      String.valueOf(firstCollision == null || Objects.equals(firstCollision.blockPos, BlockUtils.fromVecToBP(vecs[1])))
+    );*/
+
+    return (
+      (firstCollision == null || Objects.equals(firstCollision.blockPos, BlockUtils.fromVecToBP(vecs[1]))) &&
+      (secondCollision == null || Objects.equals(secondCollision.blockPos, BlockUtils.fromVecToBP(vecs[3])))
+    );
   }
 
   public static List<Vec3> shortenList(List<Vec3> original) {
+    RenderPoints.renderPoint(null, 0.1, false);
+    RenderPoints.renderPoint(null, 0, false);
     List<Vec3> newReturn = new ArrayList<>();
     Vec3 curVector = original.get(0);
     original.remove(0);
@@ -270,38 +338,13 @@ public class BlockUtils {
       Vec3 cur = original.get(i);
       Vec3 prev = i - 1 < 0 ? null : original.get(i - 1);
 
-      /*
-      List<RayTracingUtils.CollisionResult> blocksIntersected = RayTracingUtils.getCollisionVecsList(
-        curVector.xCoord + 0.5,
-        curVector.yCoord - 1.5,
-        curVector.zCoord + 0.5,
-        cur.xCoord,
-        cur.yCoord - 1.5,
-        cur.zCoord,
-        MathUtils.distanceFromTo(curVector, cur)
-      );
-
-      if (blocksIntersected != null) {
-        int airAmount = 0;
-        for (RayTracingUtils.CollisionResult block : blocksIntersected) {
-          Block blockType = BlockUtils.getBlockType(block.blockPos);
-          if (blockType == Blocks.air) {
-            airAmount++;
-          }
-        }
-
-        if (airAmount > 2) {
-          if (prev == null) {
-            newReturn.add(cur);
-          } else {
-            newReturn.add(prev);
-          }
-
-          curVector = cur;
-
-          continue;
-        }
-      }*/
+      if (
+        prev != null && (cur.yCoord > prev.yCoord || cur.yCoord < prev.yCoord) && isValidHigherPoint(fromVecToBP(cur))
+      ) {
+        newReturn.add(cur);
+        curVector = cur;
+        continue;
+      }
 
       if (!isAbleToWalkBetween(curVector, cur)) {
         if (prev == null) {
@@ -317,6 +360,10 @@ public class BlockUtils {
     newReturn.add(original.get(original.size() - 1));
 
     return newReturn;
+  }
+
+  static boolean isValidHigherPoint(BlockPos block) {
+    return !getBlockType(block.add(0, 1, 0)).getRegistryName().contains("slab");
   }
 
   public static BlockPos fromVecToBP(Vec3 block) {

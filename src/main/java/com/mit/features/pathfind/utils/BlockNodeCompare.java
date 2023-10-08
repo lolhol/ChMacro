@@ -8,7 +8,6 @@ public class BlockNodeCompare implements Comparator<BlockNodeClass> {
   public int compare(BlockNodeClass one, BlockNodeClass two) {
     int totalCostComparison = Double.compare(one.totalCost, two.totalCost);
     int hCostComparison = Double.compare(one.hCost, two.hCost);
-    int otherCostCompare = Double.compare(one.otherTotalCost, two.otherTotalCost);
 
     if (totalCostComparison < 0 && hCostComparison < 0) {
       return -1;

@@ -1,14 +1,20 @@
 package com.mit.commands;
 
+import com.mit.features.foraging.ForgaingMacroMain;
 import com.mit.features.pathfind.main.AStarPathFinder;
 import com.mit.features.pathfind.utils.PathFinderConfig;
+import com.mit.features.pathfind.walker.WalkerMain;
 import com.mit.features.render.RenderMultipleBlocksMod;
 import com.mit.global.Dependencies;
 import com.mit.util.BlockUtils;
 import com.mit.util.ChatUtils;
+import com.mit.util.MathUtils;
+import com.mit.util.RayTracingUtils;
 import gg.essential.api.commands.Command;
 import gg.essential.api.commands.DefaultHandler;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.BlockPos;
@@ -17,6 +23,8 @@ import net.minecraft.util.Vec3;
 public class test extends Command {
 
   AStarPathFinder finder = new AStarPathFinder();
+  WalkerMain walker = new WalkerMain();
+  ForgaingMacroMain forg = new ForgaingMacroMain();
 
   public test() {
     super("test");
@@ -24,34 +32,23 @@ public class test extends Command {
 
   @DefaultHandler
   public void handle(int x, int y, int z) {
-    RenderMultipleBlocksMod.renderMultipleBlocks(null, false);
+    Vec3 playerPos = BlockUtils.getCenteredVec(Dependencies.mc.thePlayer.getPositionVector());
 
-    new Thread(() -> {
-      PathFinderConfig newConfig = new PathFinderConfig(
-        false,
-        false,
-        false,
-        false,
-        false,
-        10,
-        10000,
-        1000,
-        BlockUtils.fromVecToBP(Dependencies.mc.thePlayer.getPositionVector().addVector(-0.5, 0, -0.5)),
-        new BlockPos(x, y, z),
-        new Block[] { Blocks.air },
-        new Block[] { Blocks.air },
-        100,
-        0
-      );
+    RayTracingUtils.CollisionResult firstCollision = RayTracingUtils.getCollisionVecs(
+      playerPos.xCoord,
+      playerPos.yCoord,
+      playerPos.zCoord,
+      x,
+      y,
+      z,
+      MathUtils.distanceFromTo(playerPos, new Vec3(x, y, z)),
+      new Block[] { Blocks.air, Blocks.tallgrass, Blocks.double_plant }
+    );
 
-      List<Vec3> path = finder.fromClassToVec(finder.run(newConfig));
-
-      path.forEach(i -> {
-        RenderMultipleBlocksMod.renderMultipleBlocks(i, true);
-      });
-
-      ChatUtils.chat("Done!");
-    })
-      .start();
+    ChatUtils.chat(
+      String.valueOf(
+        BlockUtils.rayTraceVecs(MathUtils.getFourPointsAbout(playerPos.addVector(0, 0.5, 0), new Vec3(x, y, z), 0.4))
+      )
+    );
   }
 }

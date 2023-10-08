@@ -27,7 +27,7 @@ public class AStarPathFinder extends Utils {
   int closed = 0;
 
   public List<BlockNodeClass> run(PathFinderConfig pathFinderConfig) {
-    RenderMultipleBlocksMod.renderMultipleBlocks(null, false);
+    //RenderMultipleBlocksMod.renderMultipleBlocks(null, false);
 
     int depth = 0;
     isStart = true;
@@ -69,12 +69,8 @@ public class AStarPathFinder extends Utils {
       closedSet.add(node);
 
       if (node.blockPos.equals(endBlock) && node.parentOfBlock != null) {
-        endPoint.parentOfBlock = previousNode;
+        endPoint.parentOfBlock = node.parentOfBlock;
         isStart = false;
-
-        /*SendChat.chat(
-          "Found! Opened " + this.opened + ". And closed " + this.closed + ". Total -> " + (this.opened + this.closed)
-        );*/
 
         return Utils.retracePath(startPoint, endPoint);
       }
@@ -98,21 +94,16 @@ public class AStarPathFinder extends Utils {
         }
 
         child.actionType = typeAction.actionType;
-        double totalAddBreak = 0;
-        if (pathFinderConfig.isMine && typeAction.blocksToBreak != null) {
-          for (BlockPos block : typeAction.blocksToBreak) {
-            totalAddBreak += getBreakCost(block);
-          }
-        }
-
         double newGCost =
           child.parentOfBlock.gCost + MathUtils.distanceFromTo(child.blockPos, child.parentOfBlock.blockPos);
         if (!openList.contains(child) || newGCost < child.gCost) {
           child.totalCost =
             child.hCost +
             child.gCost +
-            Costs.getActionCost(child.actionType, child.hCost + child.gCost) +
-            Costs.calcOtherTotalCost(child.blockPos);
+            Costs.calcOtherTotalCost(child.blockPos) +
+            Costs.getActionCost(child.actionType, child.totalCost) +
+            Costs.getYawCost(child) +
+            Costs.getDistCost(child);
           //child.otherTotalCost = Costs.calcOtherTotalCost(child.blockPos);
           //ChatUtils.chat(String.valueOf(child.otherTotalCost));
 

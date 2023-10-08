@@ -1,6 +1,9 @@
 package com.mit.features.pathfind.utils;
 
+import com.mit.features.render.RenderMultipleLines;
+import com.mit.features.render.RenderPoints;
 import com.mit.util.BlockUtils;
+import com.mit.util.MathUtils;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -8,6 +11,8 @@ import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import net.minecraft.util.BlockPos;
+import net.minecraft.util.Tuple;
+import net.minecraft.util.Vec3;
 
 public class Utils extends Costs {
 
@@ -64,17 +69,8 @@ public class Utils extends Costs {
     for (int x = -1; x <= 1; x++) {
       for (int y = -1; y <= 1; y++) {
         for (int z = -1; z <= 1; z++) {
-          if (x == 0 || z == 0) {
-            BlockPos curBlock = reference.blockPos.add(x, y, z);
-
-            if (!BlockUtils.isBlockSolid(curBlock)) {
-              returnBlocks.add(getClassOfBlock(curBlock, reference, start, end, reference.broken));
-            }
-            /*while (y == -1 && !BlockUtils.isBlockSolid(curBlock.add(0, -1, 0))) {
-              curBlock = reference.blockPos.add(0, -1, 0);
-              returnBlocks.add(getClassOfBlock(curBlock, reference, start, end, reference.broken));
-            }*/
-          }
+          BlockPos curBlock = reference.blockPos.add(x, y, z);
+          returnBlocks.add(getClassOfBlock(curBlock, reference, start, end, reference.broken));
         }
       }
     }
@@ -140,7 +136,41 @@ public class Utils extends Costs {
     BlockPos blockAbove1 = block.add(0, 1, 0);
     BlockPos blockBelow1 = block.add(0, -1, 0);
 
-    return (yDif <= 0.001 && !BlockUtils.isBlockSolid(blockAbove1) && BlockUtils.isBlockSolid(blockBelow1));
+    if (
+      yDif <= 0.001 &&
+      !BlockUtils.isBlockSolid(blockAbove1) &&
+      BlockUtils.isBlockSolid(blockBelow1) &&
+      BlockUtils.isBlockWalkable(block)
+    ) {
+      if (MathUtils.distanceFromToXZ(block, parent.blockPos) <= 1) {
+        return true;
+      }
+
+      //RenderPoints.renderPoint(BlockUtils.fromBPToVec(block.add(-0.5, 1, -0.5)), 0.2, true);
+
+      Vec3 perpNorm = MathUtils.getNormalVecBetweenVecsRev(
+        BlockUtils.fromBPToVec(block.add(-0.5, 0, -0.5)),
+        BlockUtils.fromBPToVec(parent.blockPos.add(-0.5, 0, -0.5))
+      );
+
+      BlockPos b01 = block.add(perpNorm.xCoord - 0.5, 1, perpNorm.zCoord - 0.5);
+      BlockPos b02 = block.add(-perpNorm.xCoord + 0.5, 1, -perpNorm.zCoord + 0.5);
+      BlockPos b11 = block.add(perpNorm.xCoord - 0.5, 2, perpNorm.zCoord - 0.5);
+      BlockPos b12 = block.add(-perpNorm.xCoord + 0.5, 2, -perpNorm.zCoord + 0.5);
+
+      //RenderMultipleLines.renderMultipleLines(block.add(-0.5, 1, -0.5), b01.add(0.5, 0, 0.5), true);
+
+      //RenderPoints.renderPoint(BlockUtils.fromBPToVec(b01), 0.1, true);
+
+      return (
+        !BlockUtils.isBlockSolid(b01) &&
+        !BlockUtils.isBlockSolid(b02) &&
+        !BlockUtils.isBlockSolid(b11) &&
+        !BlockUtils.isBlockSolid(b12)
+      );
+    }
+
+    return false;
   }
 
   public static boolean canJumpOn(BlockPos block, BlockNodeClass parentBlock) {
@@ -152,13 +182,41 @@ public class Utils extends Costs {
     BlockPos blockAboveOneParent = parentBlock.blockPos.add(0, 1, 0);
     BlockPos blockAboveTwoParent = parentBlock.blockPos.add(0, 2, 0);
 
-    return (
+    if (
       yDiff == 1 &&
       BlockUtils.isBlockSolid(blockBelow1) &&
       !BlockUtils.isBlockSolid(blockAbove1) &&
       !BlockUtils.isBlockSolid(blockAboveOneParent) &&
-      !BlockUtils.isBlockSolid(blockAboveTwoParent)
-    );
+      !BlockUtils.isBlockSolid(blockAboveTwoParent) &&
+      BlockUtils.isBlockWalkable(block)
+    ) {
+      if (MathUtils.distanceFromToXZ(block, parentBlock.blockPos) <= 1) {
+        return true;
+      }
+
+      Vec3 perpNorm = MathUtils.getNormalVecBetweenVecsRev(
+        BlockUtils.fromBPToVec(block.add(-0.5, 0, -0.5)),
+        BlockUtils.fromBPToVec(parentBlock.blockPos.add(-0.5, 0, -0.5))
+      );
+
+      BlockPos b01 = block.add(perpNorm.xCoord - 0.5, 2, perpNorm.zCoord - 0.5);
+      BlockPos b02 = block.add(-perpNorm.xCoord + 0.5, 2, -perpNorm.zCoord + 0.5);
+      BlockPos b11 = block.add(perpNorm.xCoord - 0.5, 3, perpNorm.zCoord - 0.5);
+      BlockPos b12 = block.add(-perpNorm.xCoord + 0.5, 3, -perpNorm.zCoord + 0.5);
+
+      //RenderMultipleLines.renderMultipleLines(block.add(-0.5, 1, -0.5), b01.add(0.5, 0, 0.5), true);
+
+      //RenderPoints.renderPoint(BlockUtils.fromBPToVec(b01), 0.1, true);
+
+      return (
+        !BlockUtils.isBlockSolid(b01) &&
+        !BlockUtils.isBlockSolid(b02) &&
+        !BlockUtils.isBlockSolid(b11) &&
+        !BlockUtils.isBlockSolid(b12)
+      );
+    }
+
+    return false;
   }
 
   public static boolean canFall(BlockPos block, BlockNodeClass parentBlock) {
@@ -167,7 +225,37 @@ public class Utils extends Costs {
     BlockPos blockBelow1 = block.add(0, -1, 0);
     BlockPos blockAbove1 = block.add(0, 1, 0);
 
-    return (yDiff < 0 && yDiff > -4 && BlockUtils.isBlockSolid(blockBelow1) && !BlockUtils.isBlockSolid(blockAbove1));
+    if (
+      (yDiff < 0 && yDiff > -4 && BlockUtils.isBlockSolid(blockBelow1) && !BlockUtils.isBlockSolid(blockAbove1)) &&
+      BlockUtils.isBlockWalkable(block)
+    ) {
+      if (MathUtils.distanceFromToXZ(block, parentBlock.blockPos) <= 1) {
+        return true;
+      }
+
+      Vec3 perpNorm = MathUtils.getNormalVecBetweenVecsRev(
+        BlockUtils.fromBPToVec(block.add(-0.5, 0, -0.5)),
+        BlockUtils.fromBPToVec(parentBlock.blockPos.add(-0.5, 0, -0.5))
+      );
+
+      BlockPos b01 = block.add(perpNorm.xCoord - 0.5, 1, perpNorm.zCoord - 0.5);
+      BlockPos b02 = block.add(-perpNorm.xCoord + 0.5, 1, -perpNorm.zCoord + 0.5);
+      BlockPos b11 = block.add(perpNorm.xCoord - 0.5, 2, perpNorm.zCoord - 0.5);
+      BlockPos b12 = block.add(-perpNorm.xCoord + 0.5, 2, -perpNorm.zCoord + 0.5);
+
+      //RenderMultipleLines.renderMultipleLines(block.add(-0.5, 1, -0.5), b01.add(0.5, 0, 0.5), true);
+
+      //RenderPoints.renderPoint(BlockUtils.fromBPToVec(b01), 0.1, true);
+
+      return (
+        !BlockUtils.isBlockSolid(b01) &&
+        !BlockUtils.isBlockSolid(b02) &&
+        !BlockUtils.isBlockSolid(b11) &&
+        !BlockUtils.isBlockSolid(b12)
+      );
+    }
+
+    return false;
   }
 
   public static boolean isAllClearToY(int y1, int y2, BlockPos block) {

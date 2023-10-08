@@ -3,6 +3,7 @@ package com.mit.util;
 import com.sun.javafx.geom.Vec2d;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.MathHelper;
+import net.minecraft.util.Tuple;
 import net.minecraft.util.Vec3;
 
 public class MathUtils {
@@ -21,6 +22,10 @@ public class MathUtils {
     double d3 = pos1.zCoord - pos2.zCoord;
 
     return java.lang.Math.sqrt(d1 * d1 + d2 * d2 + d3 * d3);
+  }
+
+  public static Vec3 getNormalVecBetweenVecsRev(Vec3 vec1, Vec3 vec2) {
+    return vec2.subtract(vec1).normalize().rotateYaw(90);
   }
 
   public static double distanceFromToXZ(BlockPos pos1, BlockPos pos2) {

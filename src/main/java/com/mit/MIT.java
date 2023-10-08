@@ -1,6 +1,8 @@
 package com.mit;
 
+import com.mit.commands.AddBlocksToRoute;
 import com.mit.commands.OpenGUI;
+import com.mit.commands.StartMacroCommand;
 import com.mit.commands.test;
 import com.mit.event.MsEvent;
 import com.mit.event.SecondEvent;
@@ -9,6 +11,7 @@ import com.mit.features.mining.MiningFeatures;
 import com.mit.features.mining.hollows.GetMetalDetectorChestLoc;
 import com.mit.features.mining.hollows.MiningNuker;
 import com.mit.features.render.*;
+import com.mit.util.RotationUtils;
 import gg.essential.api.EssentialAPI;
 import gg.essential.api.commands.Command;
 import java.io.File;
@@ -41,14 +44,15 @@ public class MIT {
   @Mod.EventHandler
   public void init(FMLInitializationEvent event) {
     Display.setTitle("MiningInTwo");
-    registerCommands(new OpenGUI(), new test());
+    registerCommands(new OpenGUI(), new test(), new AddBlocksToRoute(), new StartMacroCommand());
     registerEvents(
       new RenderSingleLineTwoPoints(),
       new RenderPoints(),
       new MiningNuker(),
       new GetMetalDetectorChestLoc(),
       new RenderMultipleLines(),
-      new RenderMultipleBlocksMod()
+      new RenderMultipleBlocksMod(),
+      new RotationUtils()
     );
   }
 
