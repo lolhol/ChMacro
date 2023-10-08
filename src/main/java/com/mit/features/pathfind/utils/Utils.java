@@ -1,5 +1,6 @@
 package com.mit.features.pathfind.utils;
 
+import com.mit.features.render.RenderMultipleBlocksMod;
 import com.mit.features.render.RenderMultipleLines;
 import com.mit.features.render.RenderPoints;
 import com.mit.util.BlockUtils;
@@ -153,10 +154,12 @@ public class Utils extends Costs {
         BlockUtils.fromBPToVec(parent.blockPos.add(-0.5, 0, -0.5))
       );
 
-      BlockPos b01 = block.add(perpNorm.xCoord - 0.5, 1, perpNorm.zCoord - 0.5);
-      BlockPos b02 = block.add(-perpNorm.xCoord + 0.5, 1, -perpNorm.zCoord + 0.5);
-      BlockPos b11 = block.add(perpNorm.xCoord - 0.5, 2, perpNorm.zCoord - 0.5);
-      BlockPos b12 = block.add(-perpNorm.xCoord + 0.5, 2, -perpNorm.zCoord + 0.5);
+      BlockPos b01 = block.add(perpNorm.xCoord - 0.5, 0, perpNorm.zCoord - 0.5);
+      BlockPos b02 = block.add(-perpNorm.xCoord + 0.5, 0, -perpNorm.zCoord + 0.5);
+      BlockPos b11 = block.add(perpNorm.xCoord - 0.5, 1, perpNorm.zCoord - 0.5);
+      BlockPos b12 = block.add(-perpNorm.xCoord + 0.5, 1, -perpNorm.zCoord + 0.5);
+
+      //RenderMultipleBlocksMod.renderMultipleBlocks(BlockUtils.fromBPToVec(b01), true);
 
       //RenderMultipleLines.renderMultipleLines(block.add(-0.5, 1, -0.5), b01.add(0.5, 0, 0.5), true);
 

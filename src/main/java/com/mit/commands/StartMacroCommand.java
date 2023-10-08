@@ -58,7 +58,7 @@ public class StartMacroCommand extends Command {
       });
       //BlockUtils.shortenList(
 
-      walker.run(path, true);
+      //walker.run(path, true);
     })
       .start();
   }

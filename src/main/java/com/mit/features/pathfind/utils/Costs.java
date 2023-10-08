@@ -13,13 +13,18 @@ public class Costs {
   }
 
   public static double getDistCost(BlockNodeClass node) {
-    return MathUtils.distanceFromTo(node.blockPos, node.parentOfBlock.blockPos) <= 1
-      ? 0
-      : MathUtils.distanceFromTo(node.blockPos, node.parentOfBlock.blockPos) * 5;
+    double dist = MathUtils.distanceFromTo(node.blockPos, node.parentOfBlock.blockPos);
+    return dist <= 1 ? 0 : dist;
   }
 
   public static double calculateHCost(BlockNodeClass nodeClass, BlockPos finalBlock) {
     return MathUtils.distanceFromTo(nodeClass.blockPos, finalBlock);
+  }
+
+  public static double getSlabCost(BlockNodeClass block) {
+    return getDistCost(block) == 0 && BlockUtils.getBlockType(block.blockPos.down()).getRegistryName().contains("slab")
+      ? -1
+      : 0;
   }
 
   public static double calculateFullCostDistance(BlockNodeClass nodeClass, BlockPos start, BlockPos end) {
@@ -60,29 +65,24 @@ public class Costs {
     Vec3 childVec = BlockUtils.getCenteredVec(BlockUtils.fromBPToVec(node.blockPos));
     Vec3 parentVec = BlockUtils.getCenteredVec(BlockUtils.fromBPToVec(node.parentOfBlock.blockPos));
 
-    // Calculate the yaw difference in radians
     double yawDifference = Math.atan2(childVec.zCoord - parentVec.zCoord, childVec.xCoord - parentVec.xCoord);
 
-    // Convert yaw difference to degrees
     double yawDegrees = Math.toDegrees(yawDifference);
 
-    // Ensure yaw is within the range -180 to 180 degrees
     if (yawDegrees > 180.0) {
       yawDegrees -= 360.0;
     } else if (yawDegrees < -180.0) {
       yawDegrees += 360.0;
     }
 
-    // Calculate the cost based on the yaw difference
-    // You can define your cost function here; for example, you can penalize larger yaw differences more.
-    double yawCost = Math.abs(yawDegrees) / 100;
+    double yawCost = Math.abs(yawDegrees) / 360;
 
     return yawCost;
   }
 
-  public static int calculateSurroundingsDoubleCost(BlockPos block) {
-    Iterable<BlockPos> blocks = BlockPos.getAllInBox(block.add(0, 1, 0).add(-2, -1, -2), block.add(2, 1, 2));
-    return BlockUtils.amountNonAir(blocks) / 2;
+  public static double calculateSurroundingsDoubleCost(BlockPos block) {
+    Iterable<BlockPos> blocks = BlockPos.getAllInBox(block.up().up().add(-1, -1, -1), block.add(1, 1, 1));
+    return BlockUtils.amountNonAir(blocks) * 1.5;
   }
 
   public static double getBreakCost(BlockPos block) {

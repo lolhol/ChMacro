@@ -97,15 +97,14 @@ public class AStarPathFinder extends Utils {
         double newGCost =
           child.parentOfBlock.gCost + MathUtils.distanceFromTo(child.blockPos, child.parentOfBlock.blockPos);
         if (!openList.contains(child) || newGCost < child.gCost) {
-          child.totalCost =
-            child.hCost +
-            child.gCost +
+          child.gCost +=
             Costs.calcOtherTotalCost(child.blockPos) +
             Costs.getActionCost(child.actionType, child.totalCost) +
             Costs.getYawCost(child) +
+            Costs.getSlabCost(child) +
             Costs.getDistCost(child);
-          //child.otherTotalCost = Costs.calcOtherTotalCost(child.blockPos);
-          //ChatUtils.chat(String.valueOf(child.otherTotalCost));
+
+          child.totalCost = child.hCost + child.gCost;
 
           openList.add(child);
           openSet.add(child);

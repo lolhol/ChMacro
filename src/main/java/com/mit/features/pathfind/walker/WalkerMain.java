@@ -48,7 +48,7 @@ public class WalkerMain {
     needed.pitch = 0.0F;
 
     if (Dependencies.mc.thePlayer.onGround) {
-      RotationUtils.smoothLook(needed, 300);
+      //RotationUtils.smoothLook(needed, 300);
     }
 
     if (!isCloseToJump()) {
@@ -60,6 +60,8 @@ public class WalkerMain {
       for (KeyBinding k : KeyBindHandler.getListKeybinds()) {
         KeyBinding.setKeyBindState(k.getKeyCode(), neededKeyPresses.contains(k));
       }
+
+      Dependencies.mc.thePlayer.setSprinting(true);
     }
 
     KeyBindHandler.setKeyBindState(Dependencies.mc.gameSettings.keyBindJump, isCloseToJump());
@@ -96,7 +98,7 @@ public class WalkerMain {
       Dependencies.mc.thePlayer.posY < curVec.yCoord &&
       !BlockUtils.getBlockType(BlockUtils.fromVecToBP(curVec.addVector(0, -1, 0))).getRegistryName().contains("slab") &&
       Dependencies.mc.thePlayer.onGround &&
-      MathUtils.distanceFromToXZ(Dependencies.mc.thePlayer.getPositionVector(), curVec) < 3
+      MathUtils.distanceFromToXZ(Dependencies.mc.thePlayer.getPositionVector(), curVec) < 5
     );
   }
 
