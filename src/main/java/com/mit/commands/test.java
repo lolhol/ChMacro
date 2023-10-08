@@ -34,38 +34,5 @@ public class test extends Command {
   }
 
   @DefaultHandler
-  public void handle(int x, int y, int z) {
-    RenderMultipleBlocksMod.renderMultipleBlocks(null, false);
-    RenderMultipleLines.renderMultipleLines(null, null, false);
-    RenderPoints.renderPoint(null, 0.1, false);
-
-    BlockPos block = new BlockPos(x, y, z);
-    BlockPos blockPos = BlockUtils.fromVecToBP(Dependencies.mc.thePlayer.getPositionVector().addVector(-0.5, 0, -0.5));
-
-    Vec3 perpNorm = MathUtils.getNormalVecBetweenVecsRev(
-      BlockUtils.fromBPToVec(block.add(-0.5, 0, -0.5)),
-      BlockUtils.fromBPToVec(blockPos.add(-0.5, 0, -0.5))
-    );
-
-    BlockPos b01 = block.add(perpNorm.xCoord * 2, 0, perpNorm.zCoord * 2);
-    BlockPos b02 = block.add(-perpNorm.xCoord, 0, perpNorm.zCoord);
-    BlockPos b11 = block.add(perpNorm.xCoord * 2, 1, perpNorm.zCoord * 2);
-    BlockPos b12 = block.add(-perpNorm.xCoord, 1, perpNorm.zCoord);
-
-    RenderMultipleBlocksMod.renderMultipleBlocks(BlockUtils.fromBPToVec(block), true);
-
-    RenderMultipleLines.renderMultipleLines(block.add(0, 1, 0), b11.add(0, 1, 0), true);
-    RenderMultipleLines.renderMultipleLines(block.add(0, 1, 0), b12.add(0, 1, 0), true);
-
-    //RenderPoints.renderPoint(BlockUtils.fromBPToVec(b01), 0.1, true);
-
-    ChatUtils.chat(
-      String.valueOf(
-        !BlockUtils.isBlockSolid(b01) &&
-        !BlockUtils.isBlockSolid(b02) &&
-        !BlockUtils.isBlockSolid(b11) &&
-        !BlockUtils.isBlockSolid(b12)
-      )
-    );
-  }
+  public void handle(int x, int y, int z) {}
 }

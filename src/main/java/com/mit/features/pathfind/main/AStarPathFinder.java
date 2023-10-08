@@ -97,12 +97,7 @@ public class AStarPathFinder extends Utils {
         double newGCost =
           child.parentOfBlock.gCost + MathUtils.distanceFromTo(child.blockPos, child.parentOfBlock.blockPos);
         if (!openList.contains(child) || newGCost < child.gCost) {
-          child.gCost +=
-            Costs.calcOtherTotalCost(child.blockPos) +
-            Costs.getActionCost(child.actionType, child.totalCost) +
-            Costs.getYawCost(child) +
-            Costs.getSlabCost(child) +
-            Costs.getDistCost(child);
+          child.gCost += Costs.calcOtherTotalCost(child);
 
           child.totalCost = child.hCost + child.gCost;
 
@@ -111,7 +106,6 @@ public class AStarPathFinder extends Utils {
         }
       }
 
-      previousNode = node;
       depth++;
     }
 

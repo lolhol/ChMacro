@@ -13,8 +13,7 @@ public class Costs {
   }
 
   public static double getDistCost(BlockNodeClass node) {
-    double dist = MathUtils.distanceFromTo(node.blockPos, node.parentOfBlock.blockPos);
-    return dist <= 1 ? 0 : dist;
+    return node.isOnSide() ? 1.5 : 0;
   }
 
   public static double calculateHCost(BlockNodeClass nodeClass, BlockPos finalBlock) {
@@ -39,9 +38,15 @@ public class Costs {
     return MathUtils.distanceFromTo(pos1, finalBlock);
   }
 
-  public static double calcOtherTotalCost(BlockPos pos) {
+  public static double calcOtherTotalCost(BlockNodeClass child) {
     // Calc random costs like surrounding etc.
-    return Utils.calculateSurroundingsDoubleCost(pos);
+    return (
+      Utils.calculateSurroundingsDoubleCost(child.blockPos) +
+      Costs.getActionCost(child.actionType) +
+      Costs.getYawCost(child) +
+      Costs.getSlabCost(child) +
+      Costs.getDistCost(child)
+    );
   }
 
   public static double calculateFullCostDistance(BlockPos pos1, BlockPos startBlock, BlockPos finalBlock) {
@@ -57,7 +62,13 @@ public class Costs {
     );
   }
 
-  public static double getActionCost(ActionTypes action, double totalCost) {
+  public static double getActionCost(ActionTypes action) {
+    switch (action) {
+      case FALL:
+        return 1.5;
+      case JUMP:
+        return 2;
+    }
     return 1;
   }
 

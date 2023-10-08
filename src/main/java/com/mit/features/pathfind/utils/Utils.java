@@ -23,7 +23,6 @@ public class Utils extends Costs {
       startingBlock,
       calculateGCostBlockPos(startingBlock, startingBlock),
       calculateHCostBlockPos(startingBlock, endBlock),
-      0,
       getFullCost(startingBlock, startingBlock, endBlock),
       null,
       new HashSet<>()
@@ -36,7 +35,6 @@ public class Utils extends Costs {
       endBlock,
       calculateGCostBlockPos(startingBlock, endBlock),
       calculateHCostBlockPos(endBlock, endBlock),
-      0,
       getFullCost(endBlock, startingBlock, endBlock),
       null,
       new HashSet<>()
@@ -57,7 +55,6 @@ public class Utils extends Costs {
       block,
       calculateGCostBlockPos(block, starting),
       calculateHCostBlockPos(block, ending),
-      calcOtherTotalCost(block),
       getFullCost(block, starting, ending),
       null,
       addBroken

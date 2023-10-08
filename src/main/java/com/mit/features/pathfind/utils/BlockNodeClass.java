@@ -1,6 +1,10 @@
 package com.mit.features.pathfind.utils;
 
+import com.mit.features.render.RenderPoints;
+import com.mit.global.Dependencies;
 import com.mit.util.BlockUtils;
+import com.mit.util.ChatUtils;
+import com.mit.util.MathUtils;
 import java.util.HashSet;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -17,7 +21,6 @@ public class BlockNodeClass extends BlockUtils {
   // Costs
   public double gCost;
   public double hCost;
-  public double otherTotalCost;
   public double totalCost;
 
   // Other
@@ -48,5 +51,57 @@ public class BlockNodeClass extends BlockUtils {
 
   public Vec3 getVec() {
     return fromBPToVec(this.blockPos);
+  }
+
+  public boolean isOnSide() {
+    return MathUtils.distanceFromTo(this.blockPos, this.parentOfBlock.blockPos) <= 1;
+  }
+
+  public boolean isClearOnSides() {
+    if (this.parentOfBlock == null) return false;
+
+    BlockPos blockPos = this.parentOfBlock.blockPos;
+
+    Vec3 perpNorm = MathUtils.getNormalVecBetweenVecsRev(
+      BlockUtils.fromBPToVec(this.blockPos),
+      BlockUtils.fromBPToVec(blockPos)
+    );
+
+    Vec3 centofLine = new Vec3(
+      (double) (blockPos.getX() + this.blockPos.getX()) / 2,
+      (double) (blockPos.getY() + this.blockPos.getY()) / 2,
+      (double) (blockPos.getZ() + this.blockPos.getZ()) / 2
+    );
+
+    RenderPoints.renderPoint(centofLine, 0.2, true);
+
+    BlockPos b01 = new BlockPos(
+      centofLine.xCoord + perpNorm.xCoord,
+      centofLine.yCoord,
+      centofLine.zCoord + perpNorm.zCoord
+    );
+    BlockPos b02 = new BlockPos(
+      centofLine.xCoord - perpNorm.xCoord,
+      centofLine.yCoord,
+      centofLine.zCoord - perpNorm.zCoord
+    );
+
+    BlockPos b11 = new BlockPos(
+      centofLine.xCoord + perpNorm.xCoord,
+      centofLine.yCoord + 1,
+      centofLine.zCoord + perpNorm.zCoord
+    );
+    BlockPos b12 = new BlockPos(
+      centofLine.xCoord - (perpNorm.xCoord),
+      centofLine.yCoord + 1,
+      centofLine.zCoord - (perpNorm.zCoord)
+    );
+
+    return (
+      !BlockUtils.isBlockSolid(b01) &&
+      !BlockUtils.isBlockSolid(b02) &&
+      !BlockUtils.isBlockSolid(b11) &&
+      !BlockUtils.isBlockSolid(b12)
+    );
   }
 }
