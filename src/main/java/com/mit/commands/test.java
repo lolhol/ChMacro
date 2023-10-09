@@ -34,5 +34,7 @@ public class test extends Command {
   }
 
   @DefaultHandler
-  public void handle(int x, int y, int z) {}
+  public void handle() {
+    forg.run(AddBlocksToRoute.blocks);
+  }
 }

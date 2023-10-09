@@ -32,6 +32,10 @@ public class ForgaingMacroMain {
 
   int brokenClearTime = 0;
 
+  public ForgaingMacroMain() {
+    MinecraftForge.EVENT_BUS.register(this);
+  }
+
   public void run(List<BlockPos> route) {
     new Thread(() -> {
       curBlock = BlockUtils.fromBPToVec(route.remove(0)).addVector(0, 1, 0);
@@ -53,14 +57,15 @@ public class ForgaingMacroMain {
         0
       );
 
-      ChatUtils.chat(String.valueOf(curBlock));
+      //ChatUtils.chat(String.valueOf(curBlock));
 
       List<Vec3> path = BlockUtils.shortenList(finder.fromClassToVec(finder.run(newConfig)));
       walker.run(path, true);
 
       this.curRoute = route;
-      MinecraftForge.EVENT_BUS.register(this);
-      isStart = true;
+      this.isStart = true;
+
+      ChatUtils.chat(String.valueOf(isStart));
     })
       .start();
   }
@@ -78,12 +83,14 @@ public class ForgaingMacroMain {
 
     if (curRoute.isEmpty()) {
       isStart = false;
+      curRoute.clear();
+      startNuker = false;
       return;
     }
 
     List<BlockPos> wood = getWoodAround();
     //ChatUtils.chat(String.valueOf(wood.size()));
-    if (!wood.isEmpty()) {
+    if (wood.size() > 4) {
       startNuker = true;
       ChatUtils.chat("STARTING!");
       return;
@@ -112,7 +119,7 @@ public class ForgaingMacroMain {
 
         List<Vec3> path = BlockUtils.shortenList(finder.fromClassToVec(finder.run(newConfig)));
 
-        walker.run(path, true);
+        walker.run(path, true, true, 4);
         this.isStart = true;
       })
         .start();
@@ -144,7 +151,7 @@ public class ForgaingMacroMain {
           MathUtils.distanceFromTo(Dependencies.mc.thePlayer.getPositionVector(), BlockUtils.fromBPToVec(closest)) <
           Dependencies.mc.playerController.getBlockReachDistance()
         ) {
-          RotationUtils.smoothLook(RotationUtils.getRotation(closest), 500);
+          RotationUtils.smoothLook(RotationUtils.getRotation(closest), 300);
           PacketUtils.sendStartPacket(closest, PacketUtils.getEnum(closest));
         }
       } else {

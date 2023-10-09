@@ -54,7 +54,7 @@ public class BlockNodeClass extends BlockUtils {
   }
 
   public boolean isOnSide() {
-    return MathUtils.distanceFromTo(this.blockPos, this.parentOfBlock.blockPos) <= 1;
+    return MathUtils.distanceFromTo(this.blockPos, this.parentOfBlock.blockPos) >= 1;
   }
 
   public boolean isClearOnSides() {
@@ -72,8 +72,6 @@ public class BlockNodeClass extends BlockUtils {
       (double) (blockPos.getY() + this.blockPos.getY()) / 2,
       (double) (blockPos.getZ() + this.blockPos.getZ()) / 2
     );
-
-    RenderPoints.renderPoint(centofLine, 0.2, true);
 
     BlockPos b01 = new BlockPos(
       centofLine.xCoord + perpNorm.xCoord,

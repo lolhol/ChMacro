@@ -20,6 +20,10 @@ public class WalkerMain {
   List<Vec3> curPath = new ArrayList<>();
   Vec3 curVec = null;
   Vec3 prev = null;
+  double distToShift = 0;
+  boolean isShift;
+  Vec3 endBlock;
+  boolean isShifting = false;
 
   Map<KeyBinding, Boolean> prevKeybinds = new HashMap<>();
   List<KeyBinding> prevPressedKeybinds = new ArrayList<>();
@@ -33,6 +37,21 @@ public class WalkerMain {
     prev = null;
   }
 
+  public void run(List<Vec3> path, boolean walkState, boolean isShiftClose, double distToToShift) {
+    MinecraftForge.EVENT_BUS.register(this);
+    state = walkState;
+    curPath = path;
+
+    this.endBlock = path.get(path.size() - 1);
+
+    curVec = BlockUtils.getCenteredVec(path.get(0));
+    path.remove(0);
+    prev = null;
+
+    this.distToShift = distToToShift;
+    isShift = isShiftClose;
+  }
+
   @SubscribeEvent
   public void onTick(TickEvent.ClientTickEvent event) {
     if (!state) return;
@@ -44,27 +63,42 @@ public class WalkerMain {
       return;
     }
 
-    RotationUtils.Rotation needed = RotationUtils.getRotation(curVec.addVector(0.5, 0, 0.5));
+    if (!Dependencies.mc.thePlayer.onGround) {
+      if (!this.curPath.isEmpty()) {
+        Vec3 newClosest = BlockUtils.getClosest(this.curPath, Dependencies.mc.thePlayer.getPositionVector());
+
+        if (newClosest == null || !newClosest.equals(this.curVec)) {
+          removeUntil(newClosest);
+          this.curVec = newClosest;
+        }
+      }
+    }
+
+    RotationUtils.Rotation needed = RotationUtils.getRotation(curVec);
     needed.pitch = 0.0F;
 
     if (Dependencies.mc.thePlayer.onGround) {
-      //RotationUtils.smoothLook(needed, 300);
+      RotationUtils.smoothLook(needed, 300);
     }
 
-    if (!isCloseToJump()) {
-      HashSet<KeyBinding> neededKeyPresses = VecUtils.getNeededKeyPressesHash(
-        Dependencies.mc.thePlayer.getPositionVector(),
-        this.curVec
-      );
+    HashSet<KeyBinding> neededKeyPresses = VecUtils.getNeededKeyPressesHash(
+      Dependencies.mc.thePlayer.getPositionVector(),
+      this.curVec
+    );
 
-      for (KeyBinding k : KeyBindHandler.getListKeybinds()) {
-        KeyBinding.setKeyBindState(k.getKeyCode(), neededKeyPresses.contains(k));
-      }
-
-      Dependencies.mc.thePlayer.setSprinting(true);
+    for (KeyBinding k : KeyBindHandler.getListKeybinds()) {
+      KeyBinding.setKeyBindState(k.getKeyCode(), neededKeyPresses.contains(k));
     }
+
+    Dependencies.mc.thePlayer.setSprinting(true);
 
     KeyBindHandler.setKeyBindState(Dependencies.mc.gameSettings.keyBindJump, isCloseToJump());
+
+    if (this.isShift) {
+      isShifting = MathUtils.distanceFromTo(Dependencies.mc.thePlayer.getPositionVector(), endBlock) < 5;
+    }
+
+    KeyBindHandler.setKeyBindState(Dependencies.mc.gameSettings.keyBindSneak, isShifting);
   }
 
   void nextBlock() {
@@ -80,11 +114,10 @@ public class WalkerMain {
   boolean isCloseToJump() {
     if (
       prev != null &&
-      prev.yCoord == curVec.yCoord &&
       !BlockUtils.getBlockType(BlockUtils.fromVecToBP(prev.addVector(0, -1, 0))).getRegistryName().contains("slab")
     ) {
       return (
-        Dependencies.mc.thePlayer.posY < curVec.yCoord &&
+        Dependencies.mc.thePlayer.posY + 0.5 < curVec.yCoord &&
         !BlockUtils
           .getBlockType(BlockUtils.fromVecToBP(curVec.addVector(0, -1, 0)))
           .getRegistryName()
@@ -95,11 +128,18 @@ public class WalkerMain {
     }
 
     return (
-      Dependencies.mc.thePlayer.posY < curVec.yCoord &&
+      Dependencies.mc.thePlayer.posY + 0.5 < curVec.yCoord &&
       !BlockUtils.getBlockType(BlockUtils.fromVecToBP(curVec.addVector(0, -1, 0))).getRegistryName().contains("slab") &&
       Dependencies.mc.thePlayer.onGround &&
-      MathUtils.distanceFromToXZ(Dependencies.mc.thePlayer.getPositionVector(), curVec) < 5
+      MathUtils.distanceFromToXZ(Dependencies.mc.thePlayer.getPositionVector(), curVec) < 3
     );
+  }
+
+  void removeUntil(Vec3 vec) {
+    while (!this.curPath.isEmpty()) {
+      if (this.curPath.get(0).equals(vec)) return;
+      this.curPath.remove(0);
+    }
   }
 
   public void pause() {

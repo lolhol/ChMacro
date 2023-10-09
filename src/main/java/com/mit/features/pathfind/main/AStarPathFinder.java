@@ -83,11 +83,7 @@ public class AStarPathFinder extends Utils {
           continue;
         }
 
-        Utils.ReturnClass typeAction = Utils.isAbleToInteract(
-          child.blockPos,
-          child.parentOfBlock,
-          pathFinderConfig.isMine
-        );
+        Utils.ReturnClass typeAction = Utils.isAbleToInteract(child);
 
         if (typeAction == null) {
           continue;

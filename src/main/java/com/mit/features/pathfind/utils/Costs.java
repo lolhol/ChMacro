@@ -13,7 +13,7 @@ public class Costs {
   }
 
   public static double getDistCost(BlockNodeClass node) {
-    return node.isOnSide() ? 1.5 : 0;
+    return node.isOnSide() ? 2 : 0;
   }
 
   public static double calculateHCost(BlockNodeClass nodeClass, BlockPos finalBlock) {
@@ -41,9 +41,8 @@ public class Costs {
   public static double calcOtherTotalCost(BlockNodeClass child) {
     // Calc random costs like surrounding etc.
     return (
-      Utils.calculateSurroundingsDoubleCost(child.blockPos) +
+      Utils.calculateSurroundingsDoubleCost(child.blockPos.up()) +
       Costs.getActionCost(child.actionType) +
-      Costs.getYawCost(child) +
       Costs.getSlabCost(child) +
       Costs.getDistCost(child)
     );
@@ -54,12 +53,7 @@ public class Costs {
   }
 
   public static double getFullCost(BlockPos pos1, BlockPos startBlock, BlockPos finalBlock) {
-    return (
-      calculateGCostBlockPos(pos1, startBlock) + calculateHCostBlockPos(pos1, finalBlock)
-      /*calculateSurroundingsDoubleCost(pos1) +
-      getBreakCost(pos1) +
-      walkCost()*/
-    );
+    return (calculateGCostBlockPos(pos1, startBlock) + calculateHCostBlockPos(pos1, finalBlock));
   }
 
   public static double getActionCost(ActionTypes action) {
@@ -92,7 +86,7 @@ public class Costs {
   }
 
   public static double calculateSurroundingsDoubleCost(BlockPos block) {
-    Iterable<BlockPos> blocks = BlockPos.getAllInBox(block.up().up().add(-1, -1, -1), block.add(1, 1, 1));
+    Iterable<BlockPos> blocks = BlockPos.getAllInBox(block.up().up().add(-2, -1, -2), block.add(2, 1, 2));
     return BlockUtils.amountNonAir(blocks) * 1.5;
   }
 

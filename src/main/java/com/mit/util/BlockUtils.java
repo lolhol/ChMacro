@@ -199,6 +199,22 @@ public class BlockUtils {
     return block;
   }
 
+  public static Vec3 getClosest(List<Vec3> blocks, Vec3 around) {
+    double curClosest = 9999;
+    Vec3 block = null;
+
+    for (Vec3 pos : blocks) {
+      double distance = MathUtils.distanceFromTo(pos, around);
+
+      if (distance < curClosest) {
+        curClosest = distance;
+        block = pos;
+      }
+    }
+
+    return block;
+  }
+
   public static BlockPos getClosest(List<BlockPos> blocks, HashSet<BlockPos> broken, BlockPos around) {
     double curClosest = 9999;
     BlockPos block = null;
@@ -277,19 +293,19 @@ public class BlockUtils {
   }
 
   public static boolean isAbleToWalkBetween(Vec3 start, Vec3 end) {
-    Vec3[] vecs = MathUtils.getFourPointsAbout(start.addVector(0.5, 0.5, 0.5), end.addVector(0.5, 0.5, 0.5), 0.4);
+    Vec3[] vecs = MathUtils.getFourPointsAbout(start.addVector(0.5, 0.5, 0.5), end.addVector(0.5, 0.5, 0.5), 0.5);
 
-    Vec3[] vecs2 = MathUtils.getFourPointsAbout(start.addVector(0.5, 1, 0.5), end.addVector(0.5, 1, 0.5), 0.4);
+    Vec3[] vecs2 = MathUtils.getFourPointsAbout(start.addVector(0.5, 1, 0.5), end.addVector(0.5, 1, 0.5), 0.5);
 
-    for (Vec3 vec : vecs2) {
+    /*for (Vec3 vec : vecs2) {
       RenderPoints.renderPoint(vec, 0.1, true);
-    }
+    }*/
 
     //ChatUtils.chat(String.valueOf(finalCollision));
 
     boolean result = rayTraceVecs(vecs) && rayTraceVecs(vecs2);
 
-    ChatUtils.chat(String.valueOf(result));
+    //ChatUtils.chat(String.valueOf(result));
 
     return result;
   }

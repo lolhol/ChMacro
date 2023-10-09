@@ -40,7 +40,7 @@ public class StartMacroCommand extends Command {
         false,
         false,
         10,
-        10000,
+        100000,
         1000,
         BlockUtils.fromVecToBP(Dependencies.mc.thePlayer.getPositionVector().addVector(-0.5, 0, -0.5)),
         new BlockPos(x, y, z),
@@ -58,7 +58,7 @@ public class StartMacroCommand extends Command {
       });
       //BlockUtils.shortenList(
 
-      //walker.run(path, true);
+      walker.run(path, true);
     })
       .start();
   }

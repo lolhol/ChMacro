@@ -106,12 +106,12 @@ public class Utils extends Costs {
     return initList;
   }
 
-  public static ReturnClass isAbleToInteract(BlockPos block, BlockNodeClass parentBlock, boolean isMine) {
-    if (canWalkOn(block, parentBlock)) return new ReturnClass(new ArrayList<>(), ActionTypes.WALK);
+  public static ReturnClass isAbleToInteract(BlockNodeClass node) {
+    if (canWalkOn(node)) return new ReturnClass(new ArrayList<>(), ActionTypes.WALK);
 
-    if (canJumpOn(block, parentBlock)) return new ReturnClass(new ArrayList<>(), ActionTypes.JUMP);
+    if (canJumpOn(node)) return new ReturnClass(new ArrayList<>(), ActionTypes.JUMP);
 
-    if (canFall(block, parentBlock)) return new ReturnClass(new ArrayList<>(), ActionTypes.FALL);
+    if (canFall(node)) return new ReturnClass(new ArrayList<>(), ActionTypes.FALL);
 
     return null;
   }
@@ -128,7 +128,10 @@ public class Utils extends Costs {
     public ActionTypes actionType;
   }
 
-  public static boolean canWalkOn(BlockPos block, BlockNodeClass parent) {
+  public static boolean canWalkOn(BlockNodeClass node) {
+    BlockPos block = node.blockPos;
+    BlockNodeClass parent = node.parentOfBlock;
+
     double yDif = Math.abs(parent.blockPos.getY() - block.getY());
 
     BlockPos blockAbove1 = block.add(0, 1, 0);
@@ -144,36 +147,15 @@ public class Utils extends Costs {
         return true;
       }
 
-      //RenderPoints.renderPoint(BlockUtils.fromBPToVec(block.add(-0.5, 1, -0.5)), 0.2, true);
-
-      Vec3 perpNorm = MathUtils.getNormalVecBetweenVecsRev(
-        BlockUtils.fromBPToVec(block.add(-0.5, 0, -0.5)),
-        BlockUtils.fromBPToVec(parent.blockPos.add(-0.5, 0, -0.5))
-      );
-
-      BlockPos b01 = block.add(perpNorm.xCoord - 0.5, 0, perpNorm.zCoord - 0.5);
-      BlockPos b02 = block.add(-perpNorm.xCoord + 0.5, 0, -perpNorm.zCoord + 0.5);
-      BlockPos b11 = block.add(perpNorm.xCoord - 0.5, 1, perpNorm.zCoord - 0.5);
-      BlockPos b12 = block.add(-perpNorm.xCoord + 0.5, 1, -perpNorm.zCoord + 0.5);
-
-      //RenderMultipleBlocksMod.renderMultipleBlocks(BlockUtils.fromBPToVec(b01), true);
-
-      //RenderMultipleLines.renderMultipleLines(block.add(-0.5, 1, -0.5), b01.add(0.5, 0, 0.5), true);
-
-      //RenderPoints.renderPoint(BlockUtils.fromBPToVec(b01), 0.1, true);
-
-      return (
-        !BlockUtils.isBlockSolid(b01) &&
-        !BlockUtils.isBlockSolid(b02) &&
-        !BlockUtils.isBlockSolid(b11) &&
-        !BlockUtils.isBlockSolid(b12)
-      );
+      return node.isClearOnSides();
     }
 
     return false;
   }
 
-  public static boolean canJumpOn(BlockPos block, BlockNodeClass parentBlock) {
+  public static boolean canJumpOn(BlockNodeClass node) {
+    BlockPos block = node.blockPos;
+    BlockNodeClass parentBlock = node.parentOfBlock;
     double yDiff = block.getY() - parentBlock.blockPos.getY();
 
     BlockPos blockAbove1 = block.add(0, 1, 0);
@@ -194,32 +176,16 @@ public class Utils extends Costs {
         return true;
       }
 
-      Vec3 perpNorm = MathUtils.getNormalVecBetweenVecsRev(
-        BlockUtils.fromBPToVec(block.add(-0.5, 0, -0.5)),
-        BlockUtils.fromBPToVec(parentBlock.blockPos.add(-0.5, 0, -0.5))
-      );
-
-      BlockPos b01 = block.add(perpNorm.xCoord - 0.5, 2, perpNorm.zCoord - 0.5);
-      BlockPos b02 = block.add(-perpNorm.xCoord + 0.5, 2, -perpNorm.zCoord + 0.5);
-      BlockPos b11 = block.add(perpNorm.xCoord - 0.5, 3, perpNorm.zCoord - 0.5);
-      BlockPos b12 = block.add(-perpNorm.xCoord + 0.5, 3, -perpNorm.zCoord + 0.5);
-
-      //RenderMultipleLines.renderMultipleLines(block.add(-0.5, 1, -0.5), b01.add(0.5, 0, 0.5), true);
-
-      //RenderPoints.renderPoint(BlockUtils.fromBPToVec(b01), 0.1, true);
-
-      return (
-        !BlockUtils.isBlockSolid(b01) &&
-        !BlockUtils.isBlockSolid(b02) &&
-        !BlockUtils.isBlockSolid(b11) &&
-        !BlockUtils.isBlockSolid(b12)
-      );
+      return node.isClearOnSides();
     }
 
     return false;
   }
 
-  public static boolean canFall(BlockPos block, BlockNodeClass parentBlock) {
+  public static boolean canFall(BlockNodeClass node) {
+    BlockPos block = node.blockPos;
+    BlockNodeClass parentBlock = node.parentOfBlock;
+
     double yDiff = block.getY() - parentBlock.blockPos.getY();
 
     BlockPos blockBelow1 = block.add(0, -1, 0);
@@ -233,26 +199,7 @@ public class Utils extends Costs {
         return true;
       }
 
-      Vec3 perpNorm = MathUtils.getNormalVecBetweenVecsRev(
-        BlockUtils.fromBPToVec(block.add(-0.5, 0, -0.5)),
-        BlockUtils.fromBPToVec(parentBlock.blockPos.add(-0.5, 0, -0.5))
-      );
-
-      BlockPos b01 = block.add(perpNorm.xCoord - 0.5, 1, perpNorm.zCoord - 0.5);
-      BlockPos b02 = block.add(-perpNorm.xCoord + 0.5, 1, -perpNorm.zCoord + 0.5);
-      BlockPos b11 = block.add(perpNorm.xCoord - 0.5, 2, perpNorm.zCoord - 0.5);
-      BlockPos b12 = block.add(-perpNorm.xCoord + 0.5, 2, -perpNorm.zCoord + 0.5);
-
-      //RenderMultipleLines.renderMultipleLines(block.add(-0.5, 1, -0.5), b01.add(0.5, 0, 0.5), true);
-
-      //RenderPoints.renderPoint(BlockUtils.fromBPToVec(b01), 0.1, true);
-
-      return (
-        !BlockUtils.isBlockSolid(b01) &&
-        !BlockUtils.isBlockSolid(b02) &&
-        !BlockUtils.isBlockSolid(b11) &&
-        !BlockUtils.isBlockSolid(b12)
-      );
+      return node.isClearOnSides();
     }
 
     return false;
