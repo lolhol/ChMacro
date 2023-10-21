@@ -50,7 +50,7 @@ public class StartMacroCommand extends Command {
         0
       );
 
-      List<Vec3> path = finder.fromClassToVec(finder.run(newConfig));
+      List<Vec3> path = BlockUtils.shortenList(finder.fromClassToVec(finder.run(newConfig)));
       ChatUtils.chat("Done!");
 
       path.forEach(i -> {

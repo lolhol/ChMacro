@@ -29,16 +29,27 @@ public class ForgaingMacroMain {
   int curNukerCount = 0;
   HashSet<BlockPos> broken = new HashSet<>();
   boolean paused = false;
+  int curListPos = 0;
 
   int brokenClearTime = 0;
 
-  public ForgaingMacroMain() {
-    MinecraftForge.EVENT_BUS.register(this);
+  public ForgaingMacroMain() {}
+
+  public void setState(boolean st) {
+    this.isStart = st;
+    if (!st) {
+      MinecraftForge.EVENT_BUS.unregister(this);
+    }
   }
 
   public void run(List<BlockPos> route) {
+    MinecraftForge.EVENT_BUS.register(this);
+
     new Thread(() -> {
-      curBlock = BlockUtils.fromBPToVec(route.remove(0)).addVector(0, 1, 0);
+      this.curRoute = route;
+      curListPos = 0;
+      this.curBlock = BlockUtils.fromBPToVec(this.curRoute.get(curListPos).add(0, 1, 0));
+      curListPos++;
 
       PathFinderConfig newConfig = new PathFinderConfig(
         false,
@@ -57,15 +68,9 @@ public class ForgaingMacroMain {
         0
       );
 
-      //ChatUtils.chat(String.valueOf(curBlock));
-
-      List<Vec3> path = BlockUtils.shortenList(finder.fromClassToVec(finder.run(newConfig)));
+      List<Vec3> path = finder.fromClassToVec(finder.run(newConfig));
       walker.run(path, true);
-
-      this.curRoute = route;
-      this.isStart = true;
-
-      ChatUtils.chat(String.valueOf(isStart));
+      setState(true);
     })
       .start();
   }
@@ -81,25 +86,22 @@ public class ForgaingMacroMain {
 
     if (!isStart || startNuker) return;
 
-    if (curRoute.isEmpty()) {
-      isStart = false;
-      curRoute.clear();
-      startNuker = false;
+    if (this.curListPos >= this.curRoute.size()) {
+      this.curListPos = 0;
       return;
     }
 
     List<BlockPos> wood = getWoodAround();
-    //ChatUtils.chat(String.valueOf(wood.size()));
-    if (wood.size() > 4) {
+    if (wood.size() > 3 && walker.isDone()) {
       startNuker = true;
-      ChatUtils.chat("STARTING!");
       return;
     }
 
     if (walker.isDone()) {
       this.isStart = false;
       new Thread(() -> {
-        curBlock = BlockUtils.fromBPToVec(curRoute.remove(0)).addVector(0, 1, 0);
+        this.curBlock = BlockUtils.fromBPToVec(this.curRoute.get(this.curListPos)).addVector(0, 1, 0);
+        this.curListPos++;
         PathFinderConfig newConfig = new PathFinderConfig(
           false,
           false,
@@ -119,7 +121,7 @@ public class ForgaingMacroMain {
 
         List<Vec3> path = BlockUtils.shortenList(finder.fromClassToVec(finder.run(newConfig)));
 
-        walker.run(path, true, true, 4);
+        walker.run(path, true, true, 2);
         this.isStart = true;
       })
         .start();
@@ -168,8 +170,8 @@ public class ForgaingMacroMain {
   List<BlockPos> getWoodAround() {
     List<BlockPos> returnBlocks = new ArrayList<>();
     Iterable<BlockPos> blocks = BlockPos.getAllInBox(
-      BlockUtils.fromVecToBP(Dependencies.mc.thePlayer.getPositionVector()).add(-3, -1, -3),
-      BlockUtils.fromVecToBP(Dependencies.mc.thePlayer.getPositionVector()).add(3, 1, 3)
+      BlockUtils.fromVecToBP(Dependencies.mc.thePlayer.getPositionVector()).add(-3, -3, -3),
+      BlockUtils.fromVecToBP(Dependencies.mc.thePlayer.getPositionVector()).add(3, 3, 3)
     );
     blocks.forEach(i -> {
       if (BlockUtils.getBlockType(i) == Blocks.log) {

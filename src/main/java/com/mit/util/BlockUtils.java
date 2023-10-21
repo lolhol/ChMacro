@@ -4,6 +4,7 @@ import com.mit.features.render.RenderPoints;
 import com.mit.global.Dependencies;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Predicate;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
@@ -31,6 +32,21 @@ public class BlockUtils {
           ) {
             returnList.add(newBlock);
           }
+        }
+      }
+    }
+
+    return returnList;
+  }
+
+  public static List<BlockPos> getBlocksInRadius(int x, int y, int z, Vec3 around) {
+    List<BlockPos> returnList = new ArrayList<>();
+
+    for (int i = -x; i <= x; i++) {
+      for (int j = -y; j <= y; j++) {
+        for (int k = -z; k <= z; k++) {
+          BlockPos newBlock = fromVecToBP(around.addVector(i, j, k));
+          returnList.add(newBlock);
         }
       }
     }
@@ -293,53 +309,17 @@ public class BlockUtils {
   }
 
   public static boolean isAbleToWalkBetween(Vec3 start, Vec3 end) {
-    Vec3[] vecs = MathUtils.getFourPointsAbout(start.addVector(0.5, 0.5, 0.5), end.addVector(0.5, 0.5, 0.5), 0.5);
+    Vec3[] vecs = MathUtils.getFourPointsAbout(start.addVector(0.5, 2, 0.5), end.addVector(0.5, 0.5, 0.5), 0.6);
+    Vec3[] vecs2 = MathUtils.getFourPointsAbout(start.addVector(0.5, 3, 0.5), end.addVector(0.5, 1, 0.5), 0.6);
 
-    Vec3[] vecs2 = MathUtils.getFourPointsAbout(start.addVector(0.5, 1, 0.5), end.addVector(0.5, 1, 0.5), 0.5);
-
-    /*for (Vec3 vec : vecs2) {
-      RenderPoints.renderPoint(vec, 0.1, true);
-    }*/
-
-    //ChatUtils.chat(String.valueOf(finalCollision));
-
-    boolean result = rayTraceVecs(vecs) && rayTraceVecs(vecs2);
-
-    //ChatUtils.chat(String.valueOf(result));
-
+    boolean result = !rayTraceVecs(vecs) && !rayTraceVecs(vecs2);
     return result;
   }
 
   public static boolean rayTraceVecs(Vec3[] vecs) {
-    RayTracingUtils.CollisionResult firstCollision = RayTracingUtils.getCollisionVecs(
-      vecs[0].xCoord,
-      vecs[0].yCoord,
-      vecs[0].zCoord,
-      vecs[1].xCoord,
-      vecs[1].yCoord,
-      vecs[1].zCoord,
-      MathUtils.distanceFromTo(vecs[1], vecs[0]),
-      new Block[] { Blocks.air, Blocks.tallgrass, Blocks.double_plant }
-    );
-
-    RayTracingUtils.CollisionResult secondCollision = RayTracingUtils.getCollisionVecs(
-      vecs[2].xCoord,
-      vecs[2].yCoord,
-      vecs[2].zCoord,
-      vecs[3].xCoord,
-      vecs[3].yCoord,
-      vecs[3].zCoord,
-      MathUtils.distanceFromTo(vecs[2], vecs[3]),
-      new Block[] { Blocks.air, Blocks.tallgrass, Blocks.double_plant }
-    );
-
-    /*ChatUtils.chat(
-      String.valueOf(firstCollision == null || Objects.equals(firstCollision.blockPos, BlockUtils.fromVecToBP(vecs[1])))
-    );*/
-
     return (
-      (firstCollision == null || Objects.equals(firstCollision.blockPos, BlockUtils.fromVecToBP(vecs[1]))) &&
-      (secondCollision == null || Objects.equals(secondCollision.blockPos, BlockUtils.fromVecToBP(vecs[3])))
+      RayTracingUtils.isObstructedBH(BlockUtils.fromVecToBP(vecs[0]), BlockUtils.fromVecToBP(vecs[1])) &&
+      RayTracingUtils.isObstructedBH(BlockUtils.fromVecToBP(vecs[2]), BlockUtils.fromVecToBP(vecs[3]))
     );
   }
 

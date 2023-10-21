@@ -545,6 +545,10 @@ public class RayTracingUtils {
     return null;
   }
 
+  public static boolean isBlockOnY(Vec3 pos1, Vec3 pos2, double Y) {
+    return true;
+  }
+
   public static MovingObjectPosition rayTraceBlocks(
     Vec3 vec31,
     Vec3 vec32,
@@ -818,5 +822,52 @@ public class RayTracingUtils {
       this.blockPos = blockPos;
       this.output = output;
     }
+  }
+
+  public static boolean isObstructedBH(BlockPos start, BlockPos end) {
+    int x1 = start.getX();
+    int y1 = start.getY();
+    int z1 = start.getZ();
+    int x2 = end.getX();
+    int y2 = end.getY();
+    int z2 = end.getZ();
+
+    int dx = Math.abs(x2 - x1);
+    int dy = Math.abs(y2 - y1);
+    int dz = Math.abs(z2 - z1);
+
+    int sx = x1 < x2 ? 1 : -1;
+    int sy = y1 < y2 ? 1 : -1;
+    int sz = z1 < z2 ? 1 : -1;
+
+    int err1 = dx - ((dy + dz) / 2);
+    int err2;
+
+    while (true) {
+      if (BlockUtils.isBlockSolid(new BlockPos(x1, y1, z1))) {
+        return true;
+      }
+
+      if (x1 == x2 && y1 == y2 && z1 == z2) break;
+
+      err2 = err1;
+
+      if (err2 > -dx) {
+        err1 -= dy;
+        x1 += sx;
+      }
+
+      if (err2 < dz) {
+        err1 += dx;
+        y1 += sy;
+      }
+
+      if (err2 < dy) {
+        err1 += dz;
+        z1 += sz;
+      }
+    }
+
+    return false;
   }
 }

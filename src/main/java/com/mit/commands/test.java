@@ -28,6 +28,7 @@ public class test extends Command {
   AStarPathFinder finder = new AStarPathFinder();
   WalkerMain walker = new WalkerMain();
   ForgaingMacroMain forg = new ForgaingMacroMain();
+  boolean st = false;
 
   public test() {
     super("test");
@@ -36,5 +37,10 @@ public class test extends Command {
   @DefaultHandler
   public void handle() {
     forg.run(AddBlocksToRoute.blocks);
+    st = !st;
+
+    if (!st) {
+      forg.setState(false);
+    }
   }
 }

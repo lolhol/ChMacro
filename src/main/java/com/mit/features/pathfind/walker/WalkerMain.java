@@ -95,14 +95,16 @@ public class WalkerMain {
     KeyBindHandler.setKeyBindState(Dependencies.mc.gameSettings.keyBindJump, isCloseToJump());
 
     if (this.isShift) {
-      isShifting = MathUtils.distanceFromTo(Dependencies.mc.thePlayer.getPositionVector(), endBlock) < 5;
+      isShifting =
+        MathUtils.distanceFromTo(Dependencies.mc.thePlayer.getPositionVector(), endBlock) < this.distToShift &&
+        Dependencies.mc.thePlayer.getPositionVector().yCoord == this.curVec.yCoord;
     }
 
     KeyBindHandler.setKeyBindState(Dependencies.mc.gameSettings.keyBindSneak, isShifting);
   }
 
   void nextBlock() {
-    if (curPath.isEmpty()) {
+    if (curPath == null || curPath.isEmpty()) {
       stop();
       return;
     }
