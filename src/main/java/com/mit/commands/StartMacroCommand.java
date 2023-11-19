@@ -22,7 +22,7 @@ public class StartMacroCommand extends Command {
 
   AStarPathFinder finder = new AStarPathFinder();
   WalkerMain walker = new WalkerMain();
-  PathScanner scanner = new PathScanner(15, 15, 15);
+  PathScanner scanner = new PathScanner(5, 5, 5);
 
   public StartMacroCommand() {
     super("macroWalk");

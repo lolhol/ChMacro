@@ -1,5 +1,6 @@
 package com.mit.features.mining.hollows;
 
+import com.google.common.util.concurrent.AtomicDouble;
 import com.mit.features.render.RenderMultipleBlocksMod;
 import com.mit.features.render.RenderOneBlockMod;
 import com.mit.global.Dependencies;
@@ -72,10 +73,10 @@ public class PathScanner {
     new Thread(() -> {
       isRunning = true;
       int count = 0;
+      BlockPos player = Dependencies.mc.thePlayer.getPosition();
       for (int i = -maxX; i <= maxX; i++) {
         for (int j = -maxY; j <= maxY; j++) {
           for (int k = -maxZ; k <= maxZ; k++) {
-            BlockPos player = Dependencies.mc.thePlayer.getPosition();
             BlockPos BP = new BlockPos(player.getX() + i, player.getY() + j, player.getZ() + k);
 
             if (alrSeen.contains(BP)) continue;
@@ -112,10 +113,10 @@ public class PathScanner {
     if (!masterS) return;
     if (!isRunning) {
       RenderMultipleBlocksMod.renderMultipleBlocks(null, false);
-      alrSeen.clear();
       foundPos.forEach(a -> {
         RenderMultipleBlocksMod.renderMultipleBlocks(BlockUtils.fromBPToVec(a), true);
       });
+      alrSeen.clear();
 
       //ChatUtils.chat(String.valueOf(foundPos.size()));
       foundPos.clear();
@@ -190,27 +191,55 @@ public class PathScanner {
   }
 
   private BlockPos calcForMostAround(HashSet<BlockPos> all) {
-    AtomicInteger curMax = new AtomicInteger(-10000);
+    AtomicDouble curMax = new AtomicDouble(1000);
     AtomicReference<BlockPos> block = new AtomicReference<>();
-    all.forEach(a -> {
-      AtomicInteger cur = new AtomicInteger();
-      all.forEach(b -> {
-        if (MathUtils.distanceFromTo(a, b) < 2) {
-          cur.addAndGet(1);
-
-          if (a.getY() > b.getY()) {
-            cur.addAndGet(-b.getY());
+    for (BlockPos a : all) {
+      for (BlockPos vloc : getStandOn(a)) {
+        AtomicDouble cur = new AtomicDouble();
+        for (BlockPos b : all) {
+          if (Math.abs(b.getY() - vloc.getY()) > 1) {
+            cur.addAndGet(10);
           }
+
+          double dst = MathUtils.distanceFromTo(vloc, b);
+
+          cur.addAndGet(MathUtils.distanceFromTo(vloc, b));
+
+          if (BlockUtils.getBlockType(b) == Blocks.stained_glass_pane) {
+            cur.addAndGet(2);
+          }
+
+          if (dst > Dependencies.mc.playerController.getBlockReachDistance()) {
+            cur.addAndGet(3);
+          }
+        }
+
+        cur.set(cur.get() / all.size());
+        if (cur.get() < curMax.get()) {
+          block.set(vloc);
+          curMax.set(cur.get());
+        }
+      }
+    }
+    return block.get();
+  }
+
+  private List<BlockPos> getStandOn(BlockPos init) {
+    List<BlockPos> standOn = new ArrayList<>();
+
+    BlockPos
+      .getAllInBox(init.add(-1, -1, -1), init.add(1, 1, 1))
+      .forEach(a -> {
+        if (
+          !isGlass(BlockUtils.getBlockType(a)) &&
+          !isGlass(BlockUtils.getBlockType(a.add(0, 1, 0))) &&
+          !isGlass(BlockUtils.getBlockType(a.add(0, 2, 0)))
+        ) {
+          standOn.add(a);
         }
       });
 
-      if (cur.get() > curMax.get()) {
-        block.set(a);
-        curMax.set(cur.get());
-      }
-    });
-
-    return block.get();
+    return standOn;
   }
 
   private boolean isGem(BlockPos block) {
