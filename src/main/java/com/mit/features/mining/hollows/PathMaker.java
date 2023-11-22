@@ -68,8 +68,10 @@ public class PathMaker {
       if (!isAbleToTPBetween(bp, tmpBP)) continue;
 
       if (depth >= this.pathSize) {
-        cur.add(tmpBP);
-        return cur;
+        if (isAbleToTPBetween(cur.get(0), tmpBP)) {
+          cur.add(tmpBP);
+          return cur;
+        }
       } else {
         List<BlockPos> reqRunRes = reqRun(tmpBP, cur, depth++);
         if (reqRunRes != null) {

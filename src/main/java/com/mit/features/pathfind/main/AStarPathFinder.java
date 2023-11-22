@@ -27,8 +27,6 @@ public class AStarPathFinder extends Utils {
   int closed = 0;
 
   public List<BlockNodeClass> run(PathFinderConfig pathFinderConfig) {
-    //RenderMultipleBlocksMod.renderMultipleBlocks(null, false);
-
     int depth = 0;
     isStart = true;
 
