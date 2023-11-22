@@ -10,7 +10,6 @@ import com.mit.util.MathUtils;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 import net.minecraft.block.Block;
@@ -24,38 +23,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 public class PathScanner {
 
   int maxX, maxY, maxZ;
-  int[][][] gemPos = new int[][][] {
-    {
-      { -1, 0, 0 },
-      { -1, 0, 1 },
-      { -1, 1, 0 },
-      { -1, 1, 1 },
-      { -1, 2, 1 },
-      { -1, 2, 2 },
-      { -1, 3, 1 },
-      { -1, 3, 2 },
-      { -1, 3, 3 },
-      { -1, 4, 3 },
-      { 0, 0, 0 },
-      { 0, 0, 1 },
-      { 0, 1, 0 },
-      { 0, 1, 1 },
-      { 0, 1, 2 },
-      { 0, 2, 0 },
-      { 0, 2, 1 },
-      { 0, 2, 2 },
-      { 0, 3, 2 },
-      { 0, 3, 3 },
-      { 0, 4, 2 },
-      { 0, 4, 3 },
-      { 0, 4, 4 },
-      { 0, 5, 3 },
-      { 0, 5, 4 },
-      { 0, 5, 5 },
-      { 0, 6, 4 },
-      { 0, 6, 5 },
-    },
-  };
+
   private HashSet<BlockPos> alrSeen = new HashSet<>();
   public List<BlockPos> foundPos = new ArrayList<>();
   public boolean isRunning = false;
@@ -79,17 +47,17 @@ public class PathScanner {
           for (int k = -maxZ; k <= maxZ; k++) {
             BlockPos BP = new BlockPos(player.getX() + i, player.getY() + j, player.getZ() + k);
 
-            if (alrSeen.contains(BP)) continue;
+            if (alrSeen.contains(BP))
+              continue;
 
-            if (
-              BlockUtils.getBlockType(BP) != Blocks.stained_glass &&
-              BlockUtils.getBlockType(BP) != Blocks.stained_glass_pane
-            ) {
+            if (BlockUtils.getBlockType(BP) != Blocks.stained_glass &&
+                BlockUtils.getBlockType(BP) != Blocks.stained_glass_pane) {
               continue;
             }
 
             Tuple<BlockPos, HashSet<BlockPos>> ret = getParentGems(BP);
-            if (ret.getFirst() == null) continue;
+            if (ret.getFirst() == null)
+              continue;
             this.alrSeen.addAll(ret.getSecond());
             this.foundPos.add(ret.getFirst());
           }
@@ -105,12 +73,13 @@ public class PathScanner {
       }
       isRunning = false;
     })
-      .start();
+        .start();
   }
 
   @SubscribeEvent
   public void onRender(RenderWorldLastEvent event) {
-    if (!masterS) return;
+    if (!masterS)
+      return;
     if (!isRunning) {
       RenderMultipleBlocksMod.renderMultipleBlocks(null, false);
       foundPos.forEach(a -> {
@@ -118,7 +87,7 @@ public class PathScanner {
       });
       alrSeen.clear();
 
-      //ChatUtils.chat(String.valueOf(foundPos.size()));
+      // ChatUtils.chat(String.valueOf(foundPos.size()));
       foundPos.clear();
       RenderOneBlockMod.renderOneBlock(null, false);
 
@@ -142,16 +111,17 @@ public class PathScanner {
       }
     }
 
-    if (block == null) return;
+    if (block == null)
+      return;
 
     List<int[]> blocks = new ArrayList<>();
     for (BlockPos b : BlockUtils
-      .getBlocksInRadius(7, 7, 7, BlockUtils.fromBPToVec(block))
-      .stream()
-      .filter(a -> {
-        return isGlass(BlockUtils.getBlockType(a));
-      })
-      .collect(Collectors.toList())) {
+        .getBlocksInRadius(7, 7, 7, BlockUtils.fromBPToVec(block))
+        .stream()
+        .filter(a -> {
+          return isGlass(BlockUtils.getBlockType(a));
+        })
+        .collect(Collectors.toList())) {
       RenderMultipleBlocksMod.renderMultipleBlocks(BlockUtils.fromBPToVec(b), true);
       blocks.add(new int[] { b.getX() - block.getX(), b.getY() - block.getY(), b.getZ() - block.getZ() });
     }
@@ -165,7 +135,6 @@ public class PathScanner {
       str.append("{").append(x).append(",").append(y).append(",").append(z).append("}").append(",");
     }
     str.append("}");
-    //{[-1, 0, 0][-1, 0, 1][-1, 1, 0][-1, 1, 1][-1, 2, 1][-1, 2, 2][-1, 3, 1][-1, 3, 2][-1, 3, 3][-1, 4, 3][0, 0, 0][0, 0, 1][0, 1, 0][0, 1, 1][0, 1, 2][0, 2, 0][0, 2, 1][0, 2, 2][0, 3, 1][0, 3, 2][0, 3, 3][0, 4, 2][0, 4, 3][0, 4, 4][0, 5, 3][0, 5, 4][0, 5, 5][0, 6, 4][0, 6, 5]}
     System.out.println(str);
   }
 
@@ -179,7 +148,8 @@ public class PathScanner {
     while (!open.isEmpty()) {
       BlockPos cur = open.remove(0);
       for (BlockPos i : BlockPos.getAllInBox(cur.add(-1, -1, -1), cur.add(1, 1, 1))) {
-        if (!isGlass(BlockUtils.getBlockType(i))) continue;
+        if (!isGlass(BlockUtils.getBlockType(i)))
+          continue;
         if (!all.contains(i)) {
           all.add(i);
           open.add(i);
@@ -228,33 +198,15 @@ public class PathScanner {
     List<BlockPos> standOn = new ArrayList<>();
 
     BlockPos
-      .getAllInBox(init.add(-1, -1, -1), init.add(1, 1, 1))
-      .forEach(a -> {
-        if (
-          !isGlass(BlockUtils.getBlockType(a)) &&
-          !isGlass(BlockUtils.getBlockType(a.add(0, 1, 0))) &&
-          !isGlass(BlockUtils.getBlockType(a.add(0, 2, 0)))
-        ) {
-          standOn.add(a);
-        }
-      });
+        .getAllInBox(init.add(-1, -1, -1), init.add(1, 1, 1))
+        .forEach(a -> {
+          if (!isGlass(BlockUtils.getBlockType(a)) &&
+              !isGlass(BlockUtils.getBlockType(a.add(0, 1, 0))) &&
+              !isGlass(BlockUtils.getBlockType(a.add(0, 2, 0)))) {
+            standOn.add(a);
+          }
+        });
 
     return standOn;
-  }
-
-  private boolean isGem(BlockPos block) {
-    for (int[][] c : gemPos) {
-      int co = 0;
-
-      for (int[] i : c) {
-        if (isGlass(BlockUtils.getBlockType(block.add(i[0], i[1], i[2])))) co++;
-      }
-
-      if (co == c.length) {
-        return true;
-      }
-    }
-
-    return false;
   }
 }
