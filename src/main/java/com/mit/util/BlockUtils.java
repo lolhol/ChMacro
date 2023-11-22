@@ -309,11 +309,13 @@ public class BlockUtils {
   }
 
   public static boolean isAbleToWalkBetween(Vec3 start, Vec3 end) {
+    return RayTracingUtils.isObstructedBH(start, end);
+    /*
     Vec3[] vecs = MathUtils.getFourPointsAbout(start.addVector(0.5, 2, 0.5), end.addVector(0.5, 0.5, 0.5), 0.6);
     Vec3[] vecs2 = MathUtils.getFourPointsAbout(start.addVector(0.5, 3, 0.5), end.addVector(0.5, 1, 0.5), 0.6);
 
     boolean result = !rayTraceVecs(vecs) && !rayTraceVecs(vecs2);
-    return result;
+    return result;*/
   }
 
   public static boolean rayTraceVecs(Vec3[] vecs) {

@@ -824,24 +824,24 @@ public class RayTracingUtils {
     }
   }
 
-  public static boolean isObstructedBH(BlockPos start, BlockPos end) {
-    int x1 = start.getX();
-    int y1 = start.getY();
-    int z1 = start.getZ();
-    int x2 = end.getX();
-    int y2 = end.getY();
-    int z2 = end.getZ();
+  public static boolean isObstructedBH(Vec3 start, Vec3 end) {
+    double x1 = start.xCoord;
+    double y1 = start.yCoord;
+    double z1 = start.zCoord;
+    double x2 = end.xCoord;
+    double y2 = end.yCoord;
+    double z2 = end.zCoord;
 
-    int dx = Math.abs(x2 - x1);
-    int dy = Math.abs(y2 - y1);
-    int dz = Math.abs(z2 - z1);
+    double dx = Math.abs(x2 - x1);
+    double dy = Math.abs(y2 - y1);
+    double dz = Math.abs(z2 - z1);
 
     int sx = x1 < x2 ? 1 : -1;
     int sy = y1 < y2 ? 1 : -1;
     int sz = z1 < z2 ? 1 : -1;
 
-    int err1 = dx - ((dy + dz) / 2);
-    int err2;
+    double err1 = dx - ((dy + dz) / 2);
+    double err2;
 
     while (true) {
       if (BlockUtils.isBlockSolid(new BlockPos(x1, y1, z1))) {
@@ -869,5 +869,9 @@ public class RayTracingUtils {
     }
 
     return false;
+  }
+
+  public static boolean isObstructedBH(BlockPos start, BlockPos end) {
+    return isObstructedBH(BlockUtils.fromBPToVec(start), BlockUtils.fromBPToVec(end));
   }
 }
