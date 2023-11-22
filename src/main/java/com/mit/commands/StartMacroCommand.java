@@ -1,5 +1,6 @@
 package com.mit.commands;
 
+import com.mit.features.mining.hollows.PathScanner;
 import com.mit.features.pathfind.main.AStarPathFinder;
 import com.mit.features.pathfind.utils.PathFinderConfig;
 import com.mit.features.pathfind.walker.WalkerMain;
@@ -21,14 +22,17 @@ public class StartMacroCommand extends Command {
 
   AStarPathFinder finder = new AStarPathFinder();
   WalkerMain walker = new WalkerMain();
+  PathScanner scanner = new PathScanner(5, 5, 5);
 
   public StartMacroCommand() {
     super("macroWalk");
   }
 
   @DefaultHandler
-  public void handle(int x, int y, int z) {
-    RenderMultipleBlocksMod.renderMultipleBlocks(null, false);
+  public void handle() {
+    scanner.masterS = true;
+    //scanner.printGemAboveP();
+    /*RenderMultipleBlocksMod.renderMultipleBlocks(null, false);
     RenderPoints.renderPoint(null, 0.1, false);
     RenderMultipleLines.renderMultipleLines(null, null, false);
 
@@ -60,6 +64,6 @@ public class StartMacroCommand extends Command {
 
       walker.run(path, true);
     })
-      .start();
+      .start();*/
   }
 }
