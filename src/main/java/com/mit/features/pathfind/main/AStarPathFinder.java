@@ -2,12 +2,16 @@ package com.mit.features.pathfind.main;
 
 import com.mit.features.pathfind.utils.*;
 import com.mit.features.render.RenderMultipleBlocksMod;
+import com.mit.global.Dependencies;
+import com.mit.util.BlockUtils;
 import com.mit.util.ChatUtils;
 import com.mit.util.MathUtils;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.PriorityQueue;
+import net.minecraft.block.Block;
+import net.minecraft.init.Blocks;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.Vec3;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -115,6 +119,25 @@ public class AStarPathFinder extends Utils {
     }
 
     return returnList;
+  }
+
+  public PathFinderConfig getWalkConfig(BlockPos bp1, BlockPos bp2) {
+    return new PathFinderConfig(
+      false,
+      false,
+      false,
+      false,
+      false,
+      10,
+      100000,
+      1000,
+      bp1,
+      bp2,
+      new Block[] { Blocks.air },
+      new Block[] { Blocks.air },
+      100,
+      0
+    );
   }
 
   @SubscribeEvent
