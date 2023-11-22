@@ -3,6 +3,7 @@ package com.mit.commands;
 import com.mit.features.mining.hollows.PathScanner;
 import com.mit.features.pathfind.main.AStarPathFinder;
 import com.mit.features.pathfind.utils.PathFinderConfig;
+import com.mit.features.pathfind.utils.render.PathRender;
 import com.mit.features.pathfind.walker.WalkerMain;
 import com.mit.features.render.RenderMultipleBlocksMod;
 import com.mit.features.render.RenderMultipleLines;
@@ -22,17 +23,18 @@ public class StartMacroCommand extends Command {
 
   AStarPathFinder finder = new AStarPathFinder();
   WalkerMain walker = new WalkerMain();
-  PathScanner scanner = new PathScanner(5, 5, 5);
+
+  //PathScanner scanner = new PathScanner(5, 5, 5);
 
   public StartMacroCommand() {
     super("macroWalk");
   }
 
   @DefaultHandler
-  public void handle() {
-    scanner.masterS = true;
+  public void handle(int x, int y, int z) {
+    //scanner.masterS = true;
     //scanner.printGemAboveP();
-    /*RenderMultipleBlocksMod.renderMultipleBlocks(null, false);
+    RenderMultipleBlocksMod.renderMultipleBlocks(null, false);
     RenderPoints.renderPoint(null, 0.1, false);
     RenderMultipleLines.renderMultipleLines(null, null, false);
 
@@ -57,13 +59,10 @@ public class StartMacroCommand extends Command {
       List<Vec3> path = BlockUtils.shortenList(finder.fromClassToVec(finder.run(newConfig)));
       ChatUtils.chat("Done!");
 
-      path.forEach(i -> {
-        RenderMultipleBlocksMod.renderMultipleBlocks(i, true);
-      });
-      //BlockUtils.shortenList(
+      PathRender.renderPath(path);
 
       walker.run(path, true);
     })
-      .start();*/
+      .start();
   }
 }

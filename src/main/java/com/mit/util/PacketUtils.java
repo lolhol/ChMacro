@@ -12,9 +12,7 @@ public class PacketUtils {
   public static EnumFacing getEnum(BlockPos block) {
     MovingObjectPosition fake = Dependencies.mc.objectMouseOver;
     fake.hitVec = new Vec3(block);
-    EnumFacing enumFacing = fake.sideHit;
-
-    return enumFacing;
+    return fake.sideHit;
   }
 
   public static void sendStartPacket(BlockPos block, EnumFacing enumFacing) {

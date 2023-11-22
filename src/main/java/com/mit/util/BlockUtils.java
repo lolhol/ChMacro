@@ -1,5 +1,6 @@
 package com.mit.util;
 
+import com.mit.features.render.RenderMultipleBlocksMod;
 import com.mit.features.render.RenderPoints;
 import com.mit.global.Dependencies;
 import java.util.*;
@@ -306,14 +307,11 @@ public class BlockUtils {
   }
 
   public static boolean isAbleToWalkBetween(Vec3 start, Vec3 end) {
-    return (
+    return bresenham(start, end) == null && bresenham(start.addVector(0, 1, 0), end.addVector(0, 1, 0)) == null;
+    /*return (
       !rayTraceVecs(MathUtils.getFourPointsAbout(start.addVector(0.5, 1, 0.5), end.addVector(0.5, 0.5, 0.5), 0.6)) &&
       !rayTraceVecs(MathUtils.getFourPointsAbout(start.addVector(0.5, 2, 0.5), end.addVector(0.5, 1, 0.5), 0.6))
-    );
-  }
-
-  public static boolean rayTraceVecs(Vec3[] vecs) {
-    return (bresenham(vecs[0], vecs[1]) == null && bresenham(vecs[2], vecs[3]) == null);
+    );*/
   }
 
   public static BlockPos bresenham(Vec3 start, Vec3 end) {
@@ -331,8 +329,9 @@ public class BlockUtils {
     int iterations = 200;
 
     while (iterations-- >= 0) {
+      //RenderMultipleBlocksMod.renderMultipleBlocks(BlockUtils.fromBPToVec(new BlockPos(x0, y0, z0)), true);
       if (x0 == x1 && y0 == y1 && z0 == z1) {
-        return new BlockPos(end);
+        return null; //new BlockPos(end);
       }
 
       boolean hasNewX = true;
@@ -407,6 +406,7 @@ public class BlockUtils {
       y0 = MathHelper.floor_double(start.yCoord) - (enumfacing == EnumFacing.UP ? 1 : 0);
       z0 = MathHelper.floor_double(start.zCoord) - (enumfacing == EnumFacing.SOUTH ? 1 : 0);
 
+      //RenderMultipleBlocksMod.renderMultipleBlocks(BlockUtils.fromBPToVec(new BlockPos(x0, y0, z0)), true);
       if (isBlockSolid(new BlockPos(x0, y0, z0))) {
         return new BlockPos(x0, y0, z0);
       }
