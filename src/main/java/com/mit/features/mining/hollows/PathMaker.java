@@ -44,7 +44,7 @@ public class PathMaker {
       while (scanner.isRunning);
 
       this.allFound = scanner.foundPos;
-      List<BlockPos> resReqRun = reqRun(getMostOptimal(allFound, ), new ArrayList<>(), 0);
+      List<BlockPos> resReqRun = reqRun(getMostOptimal(allFound), new ArrayList<>(), 0);
     })
       .start();
 
@@ -60,7 +60,7 @@ public class PathMaker {
       .sorted(
         (
           (a, b) -> {
-              return Double.compare(getGemSaturation(a), getGemSaturation(b));
+            return Double.compare(getGemSaturation(a), getGemSaturation(b));
           }
         )
       )
