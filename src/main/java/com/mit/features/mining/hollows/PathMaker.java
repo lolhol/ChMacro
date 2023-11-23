@@ -141,6 +141,8 @@ public class PathMaker {
       destBlockCenter
     );
 
+    //test
+
     CollisionResult collision =
       this.getCollisionBlock(
           block1.xCoord,
