@@ -285,7 +285,6 @@ public class RayTracingUtils {
     }
 
     collidingBlocks.sort(Comparator.comparingDouble(a -> getDistanceB(new double[] { x1, y1, z1 }, a.output)));
-
     return !collidingBlocks.isEmpty() ? collidingBlocks.get(0) : null;
   }
 

@@ -3,14 +3,13 @@ package com.mit.features.mining.hollows;
 import com.mit.event.MsEvent;
 import com.mit.global.Dependencies;
 import com.mit.gui.config.Config;
-import com.mit.util.BlockUtils;
-import com.mit.util.PacketUtils;
-import com.mit.util.Render;
+import com.mit.util.*;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import net.minecraft.util.BlockPos;
+import net.minecraft.util.Vec3;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
@@ -22,6 +21,8 @@ public class MiningNuker {
   HashSet<BlockPos> alrBroken = new HashSet<>();
   BlockPos curBlock = null;
   int timeBeforeReNuke = 0;
+
+  int tmpC = 0;
 
   @SubscribeEvent
   public void onMillisecond(MsEvent event) {

@@ -10,4 +10,8 @@ import net.minecraft.util.BlockPos;
 public class GemMacroConf {
 
   public final List<BlockPos> path;
+  public final boolean isWalking;
+  public final boolean isServerLook;
+  public final boolean isTickGliding;
+  public final long rotationTime;
 }

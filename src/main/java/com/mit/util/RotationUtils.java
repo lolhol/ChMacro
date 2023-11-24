@@ -153,6 +153,13 @@ public class RotationUtils {
     endTime = System.currentTimeMillis() + time;
   }
 
+  public static Rotation getRotToBlock(Vec3 vec) {
+    return getNeededChange(
+      new Rotation(mc.thePlayer.rotationPitch, mc.thePlayer.rotationYaw),
+      RotationUtils.getRotation(vec)
+    );
+  }
+
   public static void smartSmoothLook(Rotation rotation, int msPer180) {
     float rotationDifference = wrapAngleTo180(
       Math.max(Math.abs(rotation.pitch - mc.thePlayer.rotationPitch), Math.abs(rotation.yaw - mc.thePlayer.rotationYaw))
