@@ -5,7 +5,8 @@
   "compatibilityLevel": "JAVA_8",
   "client": [
     "RenderManagerAccessor",
-    "CancelRenderScore"
+    "CancelRenderScore",
+    "MixinNetworkManager"
   ],
   "mixins": [
   ]
