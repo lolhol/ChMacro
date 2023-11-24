@@ -1,6 +1,7 @@
 package com.mit.features.mining.hollows.scan;
 
 import com.mit.features.render.RenderMultipleBlocksMod;
+import com.mit.global.Dependencies;
 import com.mit.util.BlockUtils;
 import com.mit.util.ChatUtils;
 import com.mit.util.MathUtils;
@@ -112,11 +113,16 @@ public class PathMaker {
     return best;
   }
 
-  // TODO: Might need to re-code @this bc saturation diff
+  // TODO: Might need to re-code @this bc of speed
   private double getGemSaturation(BlockPos bp) {
     double total = 0;
     double glassTotal = 0;
-    for (BlockPos b : BlockPos.getAllInBox(bp.add(-2, -2, -2), bp.add(2, 2, 2))) {
+    float plyReach = Dependencies.mc.playerController.getBlockReachDistance();
+    for (BlockPos b : ((List<BlockPos>) BlockPos.getAllInBox(bp.add(-5, -5, -5), bp.add(5, 5, 5))).stream()
+      .filter(a ->
+        MathUtils.distanceFromTo(Dependencies.mc.thePlayer.getPositionVector(), BlockUtils.fromBPToVec(a)) < plyReach
+      )
+      .collect(Collectors.toList())) {
       total++;
 
       if (BlockUtils.getBlockType(b) == Blocks.stained_glass_pane) {
