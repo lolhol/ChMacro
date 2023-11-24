@@ -1,4 +1,4 @@
-package com.mit.features.mining.hollows;
+package com.mit.features.mining.hollows.scan;
 
 import com.google.common.util.concurrent.AtomicDouble;
 import com.mit.features.render.RenderMultipleBlocksMod;
@@ -40,6 +40,7 @@ public class PathScanner {
   public void scan() {
     new Thread(() -> {
       isRunning = true;
+
       int count = 0;
       BlockPos player = Dependencies.mc.thePlayer.getPosition();
       for (int i = -maxX; i <= maxX; i++) {
@@ -47,17 +48,17 @@ public class PathScanner {
           for (int k = -maxZ; k <= maxZ; k++) {
             BlockPos BP = new BlockPos(player.getX() + i, player.getY() + j, player.getZ() + k);
 
-            if (alrSeen.contains(BP))
-              continue;
+            if (alrSeen.contains(BP)) continue;
 
-            if (BlockUtils.getBlockType(BP) != Blocks.stained_glass &&
-                BlockUtils.getBlockType(BP) != Blocks.stained_glass_pane) {
+            if (
+              BlockUtils.getBlockType(BP) != Blocks.stained_glass &&
+              BlockUtils.getBlockType(BP) != Blocks.stained_glass_pane
+            ) {
               continue;
             }
 
             Tuple<BlockPos, HashSet<BlockPos>> ret = getParentGems(BP);
-            if (ret.getFirst() == null)
-              continue;
+            if (ret.getFirst() == null) continue;
             this.alrSeen.addAll(ret.getSecond());
             this.foundPos.add(ret.getFirst());
           }
@@ -73,23 +74,22 @@ public class PathScanner {
       }
       isRunning = false;
     })
-        .start();
+      .start();
   }
 
   @SubscribeEvent
   public void onRender(RenderWorldLastEvent event) {
-    if (!masterS)
-      return;
+    if (!masterS) return;
     if (!isRunning) {
-      RenderMultipleBlocksMod.renderMultipleBlocks(null, false);
+      /*RenderMultipleBlocksMod.renderMultipleBlocks(null, false);
       foundPos.forEach(a -> {
         RenderMultipleBlocksMod.renderMultipleBlocks(BlockUtils.fromBPToVec(a), true);
-      });
+      });*/
       alrSeen.clear();
 
       // ChatUtils.chat(String.valueOf(foundPos.size()));
       foundPos.clear();
-      RenderOneBlockMod.renderOneBlock(null, false);
+      //RenderOneBlockMod.renderOneBlock(null, false);
 
       scan();
     }
@@ -111,17 +111,16 @@ public class PathScanner {
       }
     }
 
-    if (block == null)
-      return;
+    if (block == null) return;
 
     List<int[]> blocks = new ArrayList<>();
     for (BlockPos b : BlockUtils
-        .getBlocksInRadius(7, 7, 7, BlockUtils.fromBPToVec(block))
-        .stream()
-        .filter(a -> {
-          return isGlass(BlockUtils.getBlockType(a));
-        })
-        .collect(Collectors.toList())) {
+      .getBlocksInRadius(7, 7, 7, BlockUtils.fromBPToVec(block))
+      .stream()
+      .filter(a -> {
+        return isGlass(BlockUtils.getBlockType(a));
+      })
+      .collect(Collectors.toList())) {
       RenderMultipleBlocksMod.renderMultipleBlocks(BlockUtils.fromBPToVec(b), true);
       blocks.add(new int[] { b.getX() - block.getX(), b.getY() - block.getY(), b.getZ() - block.getZ() });
     }
@@ -148,8 +147,7 @@ public class PathScanner {
     while (!open.isEmpty()) {
       BlockPos cur = open.remove(0);
       for (BlockPos i : BlockPos.getAllInBox(cur.add(-1, -1, -1), cur.add(1, 1, 1))) {
-        if (!isGlass(BlockUtils.getBlockType(i)))
-          continue;
+        if (!isGlass(BlockUtils.getBlockType(i))) continue;
         if (!all.contains(i)) {
           all.add(i);
           open.add(i);
@@ -198,14 +196,16 @@ public class PathScanner {
     List<BlockPos> standOn = new ArrayList<>();
 
     BlockPos
-        .getAllInBox(init.add(-1, -1, -1), init.add(1, 1, 1))
-        .forEach(a -> {
-          if (!isGlass(BlockUtils.getBlockType(a)) &&
-              !isGlass(BlockUtils.getBlockType(a.add(0, 1, 0))) &&
-              !isGlass(BlockUtils.getBlockType(a.add(0, 2, 0)))) {
-            standOn.add(a);
-          }
-        });
+      .getAllInBox(init.add(-1, -1, -1), init.add(1, 1, 1))
+      .forEach(a -> {
+        if (
+          !isGlass(BlockUtils.getBlockType(a)) &&
+          !isGlass(BlockUtils.getBlockType(a.add(0, 1, 0))) &&
+          !isGlass(BlockUtils.getBlockType(a.add(0, 2, 0)))
+        ) {
+          standOn.add(a);
+        }
+      });
 
     return standOn;
   }
