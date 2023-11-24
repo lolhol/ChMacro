@@ -11,6 +11,7 @@ import com.mit.features.mining.MiningFeatures;
 import com.mit.features.mining.hollows.GetMetalDetectorChestLoc;
 import com.mit.features.mining.hollows.MiningNuker;
 import com.mit.features.render.*;
+import com.mit.util.PacketUtils;
 import com.mit.util.RotationUtils;
 import gg.essential.api.EssentialAPI;
 import gg.essential.api.commands.Command;
@@ -52,7 +53,8 @@ public class MIT {
       new GetMetalDetectorChestLoc(),
       new RenderMultipleLines(),
       new RenderMultipleBlocksMod(),
-      new RotationUtils()
+      new RotationUtils(),
+      new PacketUtils()
     );
   }
 
