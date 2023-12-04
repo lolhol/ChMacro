@@ -13,6 +13,7 @@ import com.mit.features.render.RenderPoints;
 import com.mit.global.Dependencies;
 import com.mit.util.BlockUtils;
 import com.mit.util.ChatUtils;
+import com.mit.util.StringUtils;
 import gg.essential.api.commands.Command;
 import gg.essential.api.commands.DefaultHandler;
 import java.util.List;
@@ -25,23 +26,25 @@ public class StartMacroCommand extends Command {
 
   AStarPathFinder finder = new AStarPathFinder();
   WalkerMain walker = new WalkerMain();
-  PathScanner scanner = new PathScanner(70, 70, 70);
+  PathScanner scanner = new PathScanner(150, 150, 150);
   PathMaker maker = new PathMaker(scanner, 10);
 
   //PathScanner scanner = new PathScanner(5, 5, 5);
 
   public StartMacroCommand() {
-    super("macroWalk");
+    super("createPath");
   }
 
   @DefaultHandler
   public void handle(int x, int y, int z) {
-    RenderMultipleBlocksMod.renderMultipleBlocks(null, false);
+    /*RenderMultipleBlocksMod.renderMultipleBlocks(null, false);
     scanner.masterS = false;
     scanner.scan();
+    maker.pathSize = 40;
     maker.run();
 
     new Thread(() -> {
+      long start = System.currentTimeMillis();
       while (maker.isRunning) {
         try {
           Thread.sleep(100);
@@ -57,12 +60,13 @@ public class StartMacroCommand extends Command {
         RenderMultipleBlocksMod.renderMultipleBlocks(BlockUtils.fromBPToVec(bp), true);
       }
 
-      ChatUtils.chat("Path Found!!!" + amt);
+      ChatUtils.chat(Dependencies.ModPrefix + " Found Path! Size -> " + amt + ".");
+      ChatUtils.chat("Took -> " + (System.currentTimeMillis() - start) + "ms.");
     })
-      .start();
+      .start();*/
     ///////////////////////////////////////////////////////////
 
-    /*RenderMultipleBlocksMod.renderMultipleBlocks(null, false);
+    RenderMultipleBlocksMod.renderMultipleBlocks(null, false);
     RenderPoints.renderPoint(null, 0.1, false);
     RenderMultipleLines.renderMultipleLines(null, null, false);
 
@@ -73,7 +77,7 @@ public class StartMacroCommand extends Command {
         false,
         false,
         false,
-        10,
+        5,
         100000,
         1000,
         BlockUtils.fromVecToBP(Dependencies.mc.thePlayer.getPositionVector().addVector(-0.5, 0, -0.5)),
@@ -85,12 +89,12 @@ public class StartMacroCommand extends Command {
       );
 
       List<Vec3> path = BlockUtils.shortenList(finder.fromClassToVec(finder.run(newConfig)));
-      ChatUtils.chat("Done!");
 
       PathRender.renderPath(path);
 
       walker.run(path, true);
     })
-      .start();*/
+      .start();
   }
+  // /createpath -113 74 -31
 }

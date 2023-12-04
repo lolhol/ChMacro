@@ -30,7 +30,7 @@ public class PathMaker {
     Blocks.stone,
   };
 
-  private int pathSize = 0;
+  public int pathSize = 0;
 
   public PathMaker(PathScanner scanner, final int pathSize) {
     this.scanner = scanner;
@@ -52,6 +52,8 @@ public class PathMaker {
             throw new RuntimeException(e);
           }
         }
+
+        ChatUtils.chat(Dependencies.ModPrefix + " Scanner done running!");
 
         this.allFound = scanner.foundPos;
         returnPath = reqRun(getMostOptimal(allFound), new ArrayList<>(), 0);
@@ -118,7 +120,7 @@ public class PathMaker {
     double total = 0;
     double glassTotal = 0;
     float plyReach = Dependencies.mc.playerController.getBlockReachDistance();
-    for (BlockPos b : ((List<BlockPos>) BlockPos.getAllInBox(bp.add(-5, -5, -5), bp.add(5, 5, 5))).stream()
+    for (BlockPos b : (BlockUtils.getBlocksInRadius(5, 5, 5, BlockUtils.fromBPToVec(bp))).stream()
       .filter(a ->
         MathUtils.distanceFromTo(Dependencies.mc.thePlayer.getPositionVector(), BlockUtils.fromBPToVec(a)) < plyReach
       )

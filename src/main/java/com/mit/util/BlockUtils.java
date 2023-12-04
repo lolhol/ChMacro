@@ -268,17 +268,40 @@ public class BlockUtils {
 
   public static int amountNonAir(Iterable<BlockPos> blocks) {
     AtomicInteger air = new AtomicInteger();
-    blocks.forEach(i -> {
-      if (!isBlockWalkable(i)) {
+    for (BlockPos i : blocks) {
+      if (!isWalkable(i)) {
         air.getAndIncrement();
       }
-    });
+    }
 
     return air.get();
   }
 
+  public static boolean isWalkable(BlockPos bp) {
+    Block block = BlockUtils.getBlockType(bp);
+
+    return (
+      block == Blocks.air ||
+      block == Blocks.red_flower ||
+      block == Blocks.tallgrass ||
+      block == Blocks.yellow_flower ||
+      block == Blocks.double_plant ||
+      block == Blocks.snow_layer ||
+      block.getRegistryName().contains("slab")
+    );
+  }
+
   public static Vec3 getCenteredVec(Vec3 init) {
     return init.addVector(0.5, 0, 0.5);
+  }
+
+  public static List<Vec3> centerVecs(List<Vec3> vecs) {
+    List<Vec3> newVecs = new ArrayList<>();
+    for (Vec3 v : vecs) {
+      newVecs.add(getCenteredVec(v));
+    }
+
+    return newVecs;
   }
 
   public static boolean isBlockSolid(BlockPos block) {
@@ -306,12 +329,18 @@ public class BlockUtils {
     );
   }
 
+  public static boolean bresinghamsifyVecs(Vec3[] vecs) {
+    return bresenham(vecs[0], vecs[1]) == null && bresenham(vecs[2], vecs[3]) == null;
+  }
+
   public static boolean isAbleToWalkBetween(Vec3 start, Vec3 end) {
-    return bresenham(start, end) == null && bresenham(start.addVector(0, 1, 0), end.addVector(0, 1, 0)) == null;
-    /*return (
-      !rayTraceVecs(MathUtils.getFourPointsAbout(start.addVector(0.5, 1, 0.5), end.addVector(0.5, 0.5, 0.5), 0.6)) &&
-      !rayTraceVecs(MathUtils.getFourPointsAbout(start.addVector(0.5, 2, 0.5), end.addVector(0.5, 1, 0.5), 0.6))
-    );*/
+    //return bresenham(start, end) == null && bresenham(start.addVector(0, 1, 0), end.addVector(0, 1, 0)) == null;
+
+    return (
+      bresinghamsifyVecs(MathUtils.getFourPointsAbout(start.addVector(0.5, 0, 0.5), end.addVector(0.5, 0, 0.5), 0.5)) &&
+      bresinghamsifyVecs(MathUtils.getFourPointsAbout(start.addVector(0.5, 1, 0.5), end.addVector(0.5, 1, 0.5), 0.5)) &&
+      bresinghamsifyVecs(MathUtils.getFourPointsAbout(start.addVector(0.5, 2, 0.5), end.addVector(0.5, 2, 0.5), 0.5))
+    );
   }
 
   public static BlockPos bresenham(Vec3 start, Vec3 end) {
@@ -407,7 +436,8 @@ public class BlockUtils {
       z0 = MathHelper.floor_double(start.zCoord) - (enumfacing == EnumFacing.SOUTH ? 1 : 0);
 
       //RenderMultipleBlocksMod.renderMultipleBlocks(BlockUtils.fromBPToVec(new BlockPos(x0, y0, z0)), true);
-      if (isBlockSolid(new BlockPos(x0, y0, z0))) {
+      BlockPos bp = new BlockPos(x0, y0, z0);
+      if (isBlockSolid(bp) && !BlockUtils.getBlockType(bp).getRegistryName().contains("slab")) {
         return new BlockPos(x0, y0, z0);
       }
     }
@@ -421,6 +451,7 @@ public class BlockUtils {
     List<Vec3> newReturn = new ArrayList<>();
     Vec3 curVector = original.get(0);
     original.remove(0);
+    int count = 0;
 
     for (int i = 0; i < original.size(); i++) {
       Vec3 cur = original.get(i);
@@ -442,7 +473,10 @@ public class BlockUtils {
         }
 
         curVector = cur;
+        count = 0;
       }
+
+      count++;
     }
 
     newReturn.add(original.get(original.size() - 1));

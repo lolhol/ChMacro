@@ -95,8 +95,7 @@ public class AStarPathFinder extends Utils {
         double newGCost =
           child.parentOfBlock.gCost + MathUtils.distanceFromTo(child.blockPos, child.parentOfBlock.blockPos);
         if (!openList.contains(child) || newGCost < child.gCost) {
-          child.gCost += Costs.calcOtherTotalCost(child);
-
+          child.gCost += Costs.calcOtherTotalCost(child, pathFinderConfig.widePathWidth);
           child.totalCost = child.hCost + child.gCost;
 
           openList.add(child);

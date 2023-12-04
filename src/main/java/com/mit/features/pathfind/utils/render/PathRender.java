@@ -15,7 +15,7 @@ public class PathRender {
 
     for (int i = 0; i < path.size(); ++i) {
       Vec3 b = path.get(i);
-      RenderMultipleBlocksMod.renderMultipleBlocks(b, true);
+      RenderMultipleBlocksMod.renderMultipleBlocks(b.addVector(0, 0, 0), true);
 
       if (i + 1 < path.size()) {
         RenderMultipleLines.renderMultipleLines(

@@ -55,11 +55,15 @@ public class MathUtils {
     Vec3[] vecs = new Vec3[4];
 
     vecs[0] = new Vec3(vec1.xCoord - X, vec1.yCoord, vec1.zCoord - Y);
-    vecs[1] = new Vec3(X + vec1.xCoord, vec1.yCoord, Y + vec1.zCoord);
+    vecs[2] = new Vec3(X + vec1.xCoord, vec1.yCoord, Y + vec1.zCoord);
 
-    vecs[2] = new Vec3(vec2.xCoord - X, vec2.yCoord, vec2.zCoord - Y);
+    vecs[1] = new Vec3(vec2.xCoord - X, vec2.yCoord, vec2.zCoord - Y);
     vecs[3] = new Vec3(X + vec2.xCoord, vec2.yCoord, Y + vec2.zCoord);
 
     return vecs;
+  }
+
+  public static double minusAbs(double one, double two) {
+    return Math.abs(one) - Math.abs(two);
   }
 }

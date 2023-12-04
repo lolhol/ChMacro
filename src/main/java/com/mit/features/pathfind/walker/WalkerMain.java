@@ -55,16 +55,21 @@ public class WalkerMain {
   public void onTick(TickEvent.ClientTickEvent event) {
     if (!state) return;
 
-    double curDist = MathUtils.distanceFromToXZ(Dependencies.mc.thePlayer.getPositionVector(), curVec);
-
-    if (curDist < 1 && Dependencies.mc.thePlayer.posY + 0.5 >= curVec.yCoord) {
+    double curDist = MathUtils.distanceFromToXZ(
+      Dependencies.mc.thePlayer.getPositionVector(),
+      curVec.addVector(0.5, 0, 0.5)
+    );
+    if (curDist < 1 && (Math.round(Dependencies.mc.thePlayer.posY) == curVec.yCoord)) {
       nextBlock();
       return;
     }
 
     if (!Dependencies.mc.thePlayer.onGround) {
       if (!this.curPath.isEmpty()) {
-        Vec3 newClosest = BlockUtils.getClosest(this.curPath, Dependencies.mc.thePlayer.getPositionVector());
+        List<Vec3> pathTMP = new ArrayList<>(this.curPath);
+        pathTMP.add(this.curVec);
+
+        Vec3 newClosest = BlockUtils.getClosest(pathTMP, Dependencies.mc.thePlayer.getPositionVector());
 
         if (newClosest == null || !newClosest.equals(this.curVec)) {
           removeUntil(newClosest);
@@ -73,7 +78,7 @@ public class WalkerMain {
       }
     }
 
-    RotationUtils.Rotation needed = RotationUtils.getRotation(curVec);
+    RotationUtils.Rotation needed = RotationUtils.getRotation(curVec.addVector(0.5, 0, 0.5));
     needed.pitch = 0.0F;
 
     if (Dependencies.mc.thePlayer.onGround) {
@@ -113,26 +118,15 @@ public class WalkerMain {
   }
 
   boolean isCloseToJump() {
-    if (
-      prev != null &&
-      !BlockUtils.getBlockType(BlockUtils.fromVecToBP(prev.addVector(0, -1, 0))).getRegistryName().contains("slab")
-    ) {
-      return (
-        Dependencies.mc.thePlayer.posY + 0.5 < curVec.yCoord &&
-        !BlockUtils
-          .getBlockType(BlockUtils.fromVecToBP(curVec.addVector(0, -1, 0)))
-          .getRegistryName()
-          .contains("slab") &&
-        Dependencies.mc.thePlayer.onGround &&
-        MathUtils.distanceFromToXZ(Dependencies.mc.thePlayer.getPositionVector(), curVec) < 3
-      );
+    if (prev != null) {
+      BlockUtils.getBlockType(BlockUtils.fromVecToBP(prev.addVector(0, -1, 0))).getRegistryName();
     }
 
     return (
       Dependencies.mc.thePlayer.posY + 0.5 < curVec.yCoord &&
       !BlockUtils.getBlockType(BlockUtils.fromVecToBP(curVec.addVector(0, -1, 0))).getRegistryName().contains("slab") &&
       Dependencies.mc.thePlayer.onGround &&
-      MathUtils.distanceFromToXZ(Dependencies.mc.thePlayer.getPositionVector(), curVec) < 3
+      MathUtils.distanceFromToXZ(Dependencies.mc.thePlayer.getPositionVector(), curVec) < 5
     );
   }
 

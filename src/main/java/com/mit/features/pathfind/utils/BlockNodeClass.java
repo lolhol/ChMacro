@@ -54,7 +54,7 @@ public class BlockNodeClass extends BlockUtils {
   }
 
   public boolean isOnSide() {
-    return MathUtils.distanceFromTo(this.blockPos, this.parentOfBlock.blockPos) >= 1;
+    return MathUtils.distanceFromTo(this.blockPos, this.parentOfBlock.blockPos) > 1;
   }
 
   public boolean isClearOnSides() {

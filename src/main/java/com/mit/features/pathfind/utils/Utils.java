@@ -116,10 +116,6 @@ public class Utils extends Costs {
     return null;
   }
 
-  private static List<BlockPos> getTheMinList(List<List<BlockPos>> lists) {
-    return lists.stream().min(Comparator.comparingInt(List::size)).orElse(null);
-  }
-
   @Getter
   @AllArgsConstructor
   public static class ReturnClass {
