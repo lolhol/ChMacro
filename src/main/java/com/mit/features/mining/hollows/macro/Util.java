@@ -1,10 +1,7 @@
 package com.mit.features.mining.hollows.macro;
 
 import com.mit.global.Dependencies;
-import com.mit.util.BlockUtils;
-import com.mit.util.MathUtils;
-import com.mit.util.RayTracingUtils;
-import com.mit.util.RotationUtils;
+import com.mit.util.*;
 import java.awt.*;
 import java.util.HashMap;
 import java.util.List;
@@ -12,7 +9,10 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockColored;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
+import net.minecraft.item.EnumDyeColor;
 import net.minecraft.util.*;
 
 public class Util {
@@ -56,8 +56,8 @@ public class Util {
     return -1;
   }
 
-  public int getTicksPerBlock(Block block, double miningSpeed) {
-    return getTicksPerBreak(getGem(block), miningSpeed) * 50;
+  public int getTicksPerBlock(IBlockState block, double miningSpeed) {
+    return getTicksPerBreak(getGem(block), miningSpeed);
   }
 
   public int getTicksPerBreak(String name, double miningSpeed) {
@@ -65,21 +65,21 @@ public class Util {
     return Math.min(ticks, 4) * 50;
   }
 
-  public String getGem(Block block) {
-    String name = block.getRegistryName();
-    if (name.contains("red")) {
+  public String getGem(IBlockState blockState) {
+    Block block = blockState.getBlock();
+    if (blockState.getValue(BlockColored.COLOR) == EnumDyeColor.RED) {
       if (block == Blocks.stained_glass_pane) return "ruby_shard"; else return "ruby_block";
-    } else if (name.contains("orange")) {
+    } else if (blockState.getValue(BlockColored.COLOR) == EnumDyeColor.ORANGE) {
       if (block == Blocks.stained_glass_pane) return "amber_shard"; else return "amber_block";
-    } else if (name.contains("blue")) {
+    } else if (blockState.getValue(BlockColored.COLOR) == EnumDyeColor.LIGHT_BLUE) {
       if (block == Blocks.stained_glass_pane) return "sapphire_shard"; else return "sapphire_block";
-    } else if (name.contains("yellow")) {
+    } else if (blockState.getValue(BlockColored.COLOR) == EnumDyeColor.YELLOW) {
       if (block == Blocks.stained_glass_pane) return "topaz_shard"; else return "topaz_block";
-    } else if (name.contains("lime")) {
+    } else if (blockState.getValue(BlockColored.COLOR) == EnumDyeColor.LIME) {
       if (block == Blocks.stained_glass_pane) return "jade_shard"; else return "jade_block";
-    } else if (name.contains("purple")) {
+    } else if (blockState.getValue(BlockColored.COLOR) == EnumDyeColor.PURPLE) {
       if (block == Blocks.stained_glass_pane) return "jasper_shard"; else return "jasper_block";
-    } else if (name.contains("magenta")) {
+    } else if (blockState.getValue(BlockColored.COLOR) == EnumDyeColor.MAGENTA) {
       if (block == Blocks.stained_glass_pane) return "amethyst_shard"; else return "amethyst_block";
     }
 
@@ -87,17 +87,12 @@ public class Util {
   }
 
   public List<BlockPos> getBlocksAround() {
-    return (
-      (List<BlockPos>) BlockPos.getAllInBox(
-        Dependencies.mc.thePlayer.getPosition().add(-4, -4, -4),
-        Dependencies.mc.thePlayer.getPosition().add(4, 4, 4)
-      )
-    ).stream()
+    return (BlockUtils.getBlocksInRadius(4, 4, 4, Dependencies.mc.thePlayer.getPositionVector())).stream()
       .filter(a ->
         (
           BlockUtils.getBlockType(a) == Blocks.stained_glass_pane || BlockUtils.getBlockType(a) == Blocks.stained_glass
         ) &&
-        MathUtils.distanceFromTo(BlockUtils.fromBPToVec(a), Dependencies.mc.thePlayer.getPositionVector()) <
+        MathUtils.distanceFromTo(a, Dependencies.mc.thePlayer.getPosition()) <=
         Dependencies.mc.playerController.getBlockReachDistance()
       )
       .sorted((a, b) -> {

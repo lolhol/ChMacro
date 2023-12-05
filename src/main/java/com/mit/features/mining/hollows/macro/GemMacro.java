@@ -17,7 +17,7 @@ public class GemMacro {
   public boolean isMacroOn;
 
   private GemMacroConf config;
-  private Util utils;
+  private Util utils = new Util();
 
   private List<BlockPos> blocksAround = new ArrayList<>();
 
@@ -37,55 +37,68 @@ public class GemMacro {
   private long timeToNextBlock;
 
   // TODO: Needs to be changed later to an autofinding module
-  private double miningSpeed = 1680;
+  private double miningSpeed = 1660;
 
-  private Util.MiningState miningState = null;
+  public Util.MiningState miningState = null;
 
   public GemMacro(GemMacroConf config) {
-    MinecraftForge.EVENT_BUS.register(this);
-    curStandOnBlock = BlockUtils.getClosest(config.getPath(), Dependencies.mc.thePlayer.getPosition());
+    this.config = new GemMacroConf(null, true, true, true, 400);
+    //MinecraftForge.EVENT_BUS.register(this);
+    //curStandOnBlock = BlockUtils.getClosest(config.getPath(), Dependencies.mc.thePlayer.getPosition());
+  }
+
+  public void reset() {
+    curLookBlockVec = null;
+    nextLookBlockVec = null;
+    blocksAround = new ArrayList<>();
+    isMacroOn = false;
   }
 
   @SubscribeEvent
   public void onMillisecond(MsEvent event) {
-    if (!isMacroOn || miningState == null) return;
+    try {
+      if (!isMacroOn || miningState == null) {
+        return;
+      }
 
-    switch (miningState) {
-      case MINING:
-        // ---------------------------------------------------------
-        {
-          if (blocksAround.isEmpty()) {
-            getNewList();
-            return;
-          }
+      switch (miningState) {
+        case MINING:
+          // ---------------------------------------------------------
+          {
+            if (blocksAround.isEmpty()) {
+              getNewList();
+            }
 
-          if (curLookBlockVec == null) {
-            getNewFirst();
-            return;
-          }
+            if (curLookBlockVec == null) {
+              getNewFirst();
+            }
 
-          if (this.curMiningTime + this.timeAdd > this.neededMiningTime) {
-            RotationUtils.smoothLook(RotationUtils.getRotation(nextLookBlockVec), config.rotationTime);
-            this.curLookBlockVec = null;
-            this.miningState = Util.MiningState.ROTATING;
-            return;
-          }
+            //ChatUtils.chat(String.valueOf(this.neededMiningTime));
+            if (this.curMiningTime > this.neededMiningTime) {
+              RotationUtils.smoothLook(RotationUtils.getRotation(nextLookBlockVec), config.rotationTime);
+              this.curLookBlockVec = null;
+              this.miningState = Util.MiningState.ROTATING;
+              curMiningTime = 0;
+            }
 
-          curMiningTime++;
-        }
-      // -----------------------------------------------------------
-      case ROTATING:
-        {
-          if (RotationUtils.done) {
-            this.miningState = Util.MiningState.MINING;
+            this.curMiningTime++;
           }
-        }
+        // -----------------------------------------------------------
+        case ROTATING:
+          {
+            if (RotationUtils.done) {
+              this.miningState = Util.MiningState.MINING;
+            }
+          }
+      }
+    } catch (NullPointerException e) {
+      System.out.println("NULL!");
     }
   }
 
   void getNewList() {
     List<BlockPos> newList = utils.getBlocksAround();
-    if (!newList.isEmpty()) {
+    if (newList != null && !newList.isEmpty()) {
       blocksAround = newList;
     } else {
       this.miningState = null;
@@ -104,12 +117,17 @@ public class GemMacro {
     }
 
     if (nextLookBlockVec != null) {
-      this.timeAdd = (int) utils.getNextRotStart(nextLookBlockVec, config.rotationTime, curLookBlockVec);
+      this.timeAdd = (int) this.config.rotationTime / 2;
     }
 
     if (curLookBlockVec != null) {
       this.neededMiningTime =
-        utils.getTicksPerBlock(BlockUtils.getBlockType(BlockUtils.fromVecToBP(curLookBlockVec)), this.miningSpeed);
+        utils.getTicksPerBlock(
+          Dependencies.mc.theWorld.getBlockState(BlockUtils.fromVecToBP(curLookBlockVec)),
+          this.miningSpeed
+        );
+
+      ChatUtils.chat(String.valueOf(neededMiningTime) + "!!!");
     }
   }
 

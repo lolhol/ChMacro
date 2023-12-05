@@ -1,9 +1,11 @@
 package com.mit.util;
 
+import com.mit.global.Dependencies;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.settings.GameSettings;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -33,6 +35,16 @@ public class KeyBindHandler {
   static {
     mcLeftClickCounter = ReflectionHelper.findField(Minecraft.class, "field_71429_W", "leftClickCounter");
     if (mcLeftClickCounter != null) mcLeftClickCounter.setAccessible(true);
+  }
+
+  private KeyBinding attackKey = mc.gameSettings.keyBindAttack;
+
+  public static void holdLeftClick() {
+    KeyBinding.setKeyBindState(Dependencies.mc.gameSettings.keyBindAttack.getKeyCode(), true);
+  }
+
+  public static void releaseLeftClick() {
+    KeyBinding.setKeyBindState(Dependencies.mc.gameSettings.keyBindAttack.getKeyCode(), false);
   }
 
   public static List<KeyBinding> getListKeybinds() {
