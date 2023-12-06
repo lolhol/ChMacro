@@ -14,6 +14,7 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.EnumDyeColor;
 import net.minecraft.util.*;
+import tv.twitch.chat.Chat;
 
 public class Util {
 
@@ -57,12 +58,14 @@ public class Util {
   }
 
   public int getTicksPerBlock(IBlockState block, double miningSpeed) {
-    return getTicksPerBreak(getGem(block), miningSpeed);
+    double res = getTicksPerBreak(getGem(block), miningSpeed);
+    ChatUtils.chat(getGem(block) + " | " + miningSpeed + " -> " + res);
+    return (int) res;
   }
 
   public int getTicksPerBreak(String name, double miningSpeed) {
-    int ticks = (int) (blockHardnessData.get(name) * 30 / miningSpeed);
-    return Math.min(ticks, 4) * 50;
+    double ticks = (double) (blockHardnessData.get(name) * 30 / miningSpeed);
+    return (int) (Math.max(ticks, 4) * 50);
   }
 
   public String getGem(IBlockState blockState) {
@@ -77,9 +80,9 @@ public class Util {
       if (block == Blocks.stained_glass_pane) return "topaz_shard"; else return "topaz_block";
     } else if (blockState.getValue(BlockColored.COLOR) == EnumDyeColor.LIME) {
       if (block == Blocks.stained_glass_pane) return "jade_shard"; else return "jade_block";
-    } else if (blockState.getValue(BlockColored.COLOR) == EnumDyeColor.PURPLE) {
-      if (block == Blocks.stained_glass_pane) return "jasper_shard"; else return "jasper_block";
     } else if (blockState.getValue(BlockColored.COLOR) == EnumDyeColor.MAGENTA) {
+      if (block == Blocks.stained_glass_pane) return "jasper_shard"; else return "jasper_block";
+    } else if (blockState.getValue(BlockColored.COLOR) == EnumDyeColor.PURPLE) {
       if (block == Blocks.stained_glass_pane) return "amethyst_shard"; else return "amethyst_block";
     }
 
@@ -95,20 +98,6 @@ public class Util {
         MathUtils.distanceFromTo(a, Dependencies.mc.thePlayer.getPosition()) <=
         Dependencies.mc.playerController.getBlockReachDistance()
       )
-      .sorted((a, b) -> {
-        double addTotalA = Dependencies.mc.thePlayer.rotationYaw - RotationUtils.getRotation(a).yaw;
-        double addTotalB = Dependencies.mc.thePlayer.rotationYaw - RotationUtils.getRotation(b).yaw;
-
-        if (BlockUtils.getBlockType(a) == Blocks.stained_glass) {
-          addTotalA += 2;
-        }
-
-        if (BlockUtils.getBlockType(b) == Blocks.stained_glass) {
-          addTotalB += 2;
-        }
-
-        return Double.compare(addTotalA, addTotalB);
-      })
       .collect(Collectors.toList());
   }
 

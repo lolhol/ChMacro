@@ -1,11 +1,16 @@
 package com.mit.features.mining.hollows.macro;
 
 import com.mit.event.MsEvent;
+import com.mit.features.render.RenderMultipleBlocksMod;
+import com.mit.features.render.RenderOneBlockMod;
 import com.mit.global.Dependencies;
 import com.mit.util.*;
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.ConcurrentModificationException;
 import java.util.List;
+import net.minecraft.block.Block;
+import net.minecraft.init.Blocks;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.Vec3;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
@@ -73,12 +78,11 @@ public class GemMacro {
               getNewFirst();
             }
 
-            //ChatUtils.chat(String.valueOf(this.neededMiningTime));
-            if (this.curMiningTime > this.neededMiningTime) {
-              RotationUtils.smoothLook(RotationUtils.getRotation(nextLookBlockVec), config.rotationTime);
+            if (this.curMiningTime >= this.neededMiningTime) {
+              this.curMiningTime = 0;
               this.curLookBlockVec = null;
               this.miningState = Util.MiningState.ROTATING;
-              curMiningTime = 0;
+              RotationUtils.smoothLook(RotationUtils.getRotation(nextLookBlockVec), config.rotationTime);
             }
 
             this.curMiningTime++;
@@ -92,7 +96,7 @@ public class GemMacro {
           }
       }
     } catch (NullPointerException e) {
-      System.out.println("NULL!");
+      ChatUtils.chat("NULL!");
     }
   }
 
@@ -106,12 +110,19 @@ public class GemMacro {
   }
 
   void getNewFirst() {
+    ChatUtils.chat(String.valueOf(neededMiningTime) + "!!!");
     if (nextLookBlockVec != null) {
       this.curLookBlockVec = this.nextLookBlockVec;
     }
 
     if (!blocksAround.isEmpty()) {
-      BlockPos curBP = blocksAround.remove(0);
+      //RenderOneBlockMod.renderOneBlock(Dependencies.mc.thePlayer.getPositionVector().addVector(-0.5, 0, -0.5), false);
+      RenderMultipleBlocksMod.renderMultipleBlocks(
+        Dependencies.mc.thePlayer.getPositionVector().addVector(-0.5, 0, -0.5),
+        false
+      );
+      BlockPos curBP = getNextBestBlock();
+      this.blocksAround.remove(curBP);
       this.renderBlock = curBP;
       this.nextLookBlockVec = bpToVec(curBP);
     }
@@ -126,9 +137,52 @@ public class GemMacro {
           Dependencies.mc.theWorld.getBlockState(BlockUtils.fromVecToBP(curLookBlockVec)),
           this.miningSpeed
         );
-
-      ChatUtils.chat(String.valueOf(neededMiningTime) + "!!!");
     }
+  }
+
+  private BlockPos getNextBestBlock() {
+    double best = 100000;
+    BlockPos bestBlock = null;
+
+    RenderMultipleBlocksMod.renderMultipleBlocks(
+      Dependencies.mc.thePlayer.getPositionVector().addVector(-0.5, 0, -0.5),
+      true
+    );
+
+    int a = 0;
+    while (a < this.blocksAround.size()) {
+      BlockPos b = blocksAround.get(a);
+      if (
+        RayTracingUtils.adjustLook(
+          Dependencies.mc.thePlayer.getPositionVector().addVector(-0.5, 0, -0.5),
+          b,
+          new Block[] { Blocks.air },
+          false
+        ) ==
+        null
+      ) {
+        a++;
+        continue;
+      }
+      double curTotal = 0;
+      Block type = BlockUtils.getBlockType(b);
+      if (type == Blocks.stained_glass) {
+        curTotal += 2;
+      }
+
+      RotationUtils.Rotation needed = RotationUtils.getRotation(b);
+      curTotal += needed.yaw;
+      curTotal += needed.pitch;
+
+      if (curTotal < best) {
+        best = curTotal;
+        bestBlock = b;
+      }
+
+      a++;
+    }
+
+    return bestBlock;
   }
 
   Vec3 bpToVec(BlockPos bp) {
@@ -145,5 +199,10 @@ public class GemMacro {
     if (renderBlock == null || !isMacroOn) return;
 
     Render.drawFilledInBlock(renderBlock, Color.BLUE, 0.5F, event.partialTicks);
+    try {
+      this.blocksAround.forEach(a -> {
+          Render.drawFilledInBlock(a, Color.RED, 0.2F, event.partialTicks);
+        });
+    } catch (ConcurrentModificationException e) {}
   }
 }
