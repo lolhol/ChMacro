@@ -1,6 +1,5 @@
 package com.mit.commands;
 
-import com.mit.features.mining.hollows.macro.pathfinder.ShiftTo;
 import com.mit.features.mining.hollows.scan.PathMaker;
 import com.mit.features.mining.hollows.scan.PathScanner;
 import com.mit.features.pathfind.main.AStarPathFinder;
@@ -12,8 +11,6 @@ import com.mit.features.render.RenderMultipleLines;
 import com.mit.features.render.RenderPoints;
 import com.mit.global.Dependencies;
 import com.mit.util.BlockUtils;
-import com.mit.util.ChatUtils;
-import com.mit.util.StringUtils;
 import gg.essential.api.commands.Command;
 import gg.essential.api.commands.DefaultHandler;
 import java.util.List;

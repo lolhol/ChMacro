@@ -1,4 +1,4 @@
-package com.mit.features.mining.hollows.macro.pathfinder;
+package com.mit.features.mining.hollows.pathfinder;
 
 import com.mit.features.pathfind.main.AStarPathFinder;
 import com.mit.global.Dependencies;
@@ -32,11 +32,8 @@ public class ShiftTo {
 
   Vec3 curPosWalking = null;
 
-  public ShiftTo(BlockPos miningNext) {
+  public void run(BlockPos miningNext) {
     this.miningNext = miningNext;
-  }
-
-  public void run() {
     MinecraftForge.EVENT_BUS.register(this);
     new Thread(() -> {
       working = true;

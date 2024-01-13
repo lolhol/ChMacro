@@ -43,6 +43,12 @@ public class PacketUtils {
     );
   }
 
+  public static void sendAbortPacket(BlockPos block, EnumFacing enumFacing) {
+    Dependencies.mc.thePlayer.sendQueue.addToSendQueue(
+      new C07PacketPlayerDigging(C07PacketPlayerDigging.Action.ABORT_DESTROY_BLOCK, block, enumFacing)
+    );
+  }
+
   public static long getPing() {
     if (packets == 0) {
       return -1;
