@@ -3,6 +3,7 @@ package com.mit.features.mining.hollows.macro;
 import com.mit.features.mining.hollows.macro.data.ListUtil;
 import com.mit.features.mining.hollows.macro.data.PacketHandlerUtil;
 import com.mit.features.mining.hollows.macro.data.TimeUtil;
+import com.mit.features.mining.hollows.macro.util.ShifterCallback;
 import com.mit.features.mining.hollows.pathfinder.ShiftTo;
 import com.mit.features.render.RenderMultipleBlocksMod;
 import com.mit.global.Dependencies;
@@ -26,6 +27,7 @@ public class MiningMacro {
   double miningSpeedNormal = 0;
   double miningSpeedBoost = 0;
   boolean isOn;
+  boolean isShifterOn = false;
   MiningMacroUtil util = new MiningMacroUtil();
 
   BlockPos curMiningBlock = null;
@@ -61,11 +63,19 @@ public class MiningMacro {
 
   @SubscribeEvent
   public void onRender(RenderWorldLastEvent event) {
-    if (!isOn) return;
+    if (!isOn) {
+      if (packetUtil.isStartSent) {
+        Dependencies.mc.thePlayer.swingItem();
+        PacketUtils.sendAbortPacket(curMiningBlock, PacketUtils.getEnum(curMiningBlock));
+        packetUtil.isStartSent = false;
+      }
+      return;
+    }
+    KeyBindHandler.setKeyBindState(Dependencies.mc.gameSettings.keyBindSneak, true);
     timeUtil.timeUntilShift += System.currentTimeMillis() - timeUtil.lastMsTime;
     timeUtil.lastMsTime = System.currentTimeMillis();
 
-    RenderMultipleBlocksMod.renderMultipleBlocks(null, false);
+    //RenderMultipleBlocksMod.renderMultipleBlocks(null, false);
 
     if (listUtils.possibleBreaks.isEmpty()) {
       util.getAllBlocks(listUtils);
@@ -109,11 +119,24 @@ public class MiningMacro {
       return;
     }*/
 
-    if (timeUtil.timeUntilShift >= 2000) {
-      shifter.run(curMiningBlock);
+    if (timeUtil.timeUntilShift >= 2000 && !isShifterOn) {
+      ChatUtils.chat(String.valueOf(timeUtil.timeUntilShift));
+      shifter.run(
+        curMiningBlock,
+        new ShifterCallback() {
+          @Override
+          public void shifterDone() {
+            isShifterOn = false;
+            ChatUtils.chat("!!!!!!!!!!!");
+            timeUtil.timeUntilShift = 0;
+          }
+        },
+        listUtils.possibleBreaks
+      );
+      isShifterOn = true;
     }
 
-    if (curMiningBlock != null && !packetUtil.isStartedRotation) {
+    if ((curMiningBlock != null) && (!packetUtil.isStartedRotation || isShifterOn)) {
       Vec3 lookVec = RayTracingUtils.getPossibleLocDefault(
         Dependencies.mc.thePlayer.getPositionVector(),
         curMiningBlock,
@@ -127,6 +150,8 @@ public class MiningMacro {
 
       if (lookVec != null) {
         RotationUtils.smoothLook(RotationUtils.getRotation(lookVec), time);
+      } else {
+        ChatUtils.chat("NUL!!");
       }
     }
 
@@ -138,9 +163,9 @@ public class MiningMacro {
         timeUtil.starTimeMsSystem = System.currentTimeMillis();
       }
 
-      ChatUtils.chat(
+      /*ChatUtils.chat(
         String.valueOf(System.currentTimeMillis() - timeUtil.projectedEndTimeBreakBlock - timeUtil.starTimeMsSystem)
-      );
+      );*/
       if (
         System.currentTimeMillis() - timeUtil.projectedEndTimeBreakBlock - timeUtil.starTimeMsSystem >= 0 ||
         curMiningBlock == null
@@ -173,12 +198,12 @@ public class MiningMacro {
       }
     }*/
 
-    for (BlockPos b : listUtils.currentlyPossibleToSee) {
+    /*for (BlockPos b : listUtils.currentlyPossibleToSee) {
       Vec3 vec = BlockUtils.fromBPToVec(b);
       if (!RenderMultipleBlocksMod.isRendered(vec)) {
         RenderMultipleBlocksMod.renderMultipleBlocks(vec, true);
       }
-    }
+    }*/
 
     isRendered = true;
   }

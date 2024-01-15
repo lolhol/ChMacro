@@ -41,11 +41,11 @@ public class Costs {
   public static double calcOtherTotalCost(BlockNodeClass child, int pathWidth) {
     // Calc random costs like surrounding etc.
     return (
-      Utils.calculateSurroundingsDoubleCost(child.blockPos.up(), pathWidth) +
+      //Utils.calculateSurroundingsDoubleCost(child.blockPos.up(), pathWidth) +
       Costs.getActionCost(child.actionType) +
       Costs.getSlabCost(child) +
       //Costs.getDistCost(child) +
-      Costs.getPathWidthCost(child, child.parentOfBlock) +
+      //Costs.getPathWidthCost(child, child.parentOfBlock) +
       Costs.calcDirectionChange(child)
     );
   }
