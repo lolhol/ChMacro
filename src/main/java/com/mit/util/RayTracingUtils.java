@@ -138,7 +138,7 @@ public class RayTracingUtils {
           block1.addVector(0, playerHeight, 0),
           point,
           true,
-          false,
+          true,
           true
         );
         if (collisionPoint == null || collisionPoint.getBlockPos().equals(destBlock)) {

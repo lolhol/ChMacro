@@ -3,10 +3,7 @@ package com.mit.features.mining.hollows.macro;
 import com.mit.features.mining.hollows.macro.data.CostUtils;
 import com.mit.features.mining.hollows.macro.data.ListUtil;
 import com.mit.global.Dependencies;
-import com.mit.util.BlockUtils;
-import com.mit.util.MathUtils;
-import com.mit.util.RayTracingUtils;
-import com.mit.util.RotationUtils;
+import com.mit.util.*;
 import java.awt.*;
 import java.util.*;
 import java.util.List;
@@ -82,7 +79,9 @@ public class MiningMacroUtil extends CostUtils {
       broken.contains(b) ||
       MathUtils.distanceFromTo(
         BlockUtils.getCenteredVec(BlockUtils.fromBPToVec(b)),
-        BlockUtils.getCenteredVec(Dependencies.mc.thePlayer.getPositionVector())
+        BlockUtils
+          .getCenteredVec(Dependencies.mc.thePlayer.getPositionVector())
+          .addVector(0, Dependencies.mc.thePlayer.eyeHeight, 0)
       ) >=
       reach ||
       RayTracingUtils.getPossibleLocDefault(
@@ -92,7 +91,9 @@ public class MiningMacroUtil extends CostUtils {
       ) ==
       null
     );
-    tmp.sort((a, b) -> Double.compare(getCost(a), getCost(b)));
+    tmp.sort((a, b) -> {
+      return getCost(a) < getCost(b) ? -1 : 1;
+    });
     lists.currentlyPossibleToSee = tmp;
   }
 
@@ -104,16 +105,8 @@ public class MiningMacroUtil extends CostUtils {
       cost += fullBlockCost;
     }
 
-    double distance = Math.round(
-      MathUtils.distanceFromTo(
-        BlockUtils.getCenteredVec(BlockUtils.fromBPToVec(b)),
-        BlockUtils.getCenteredVec(Dependencies.mc.thePlayer.getPositionVector())
-      )
-    );
-
-    cost += distance * distance1MCost;
-    double yaw = RotationUtils.getRotation(b).yaw;
-    cost += yaw * yawCost;
+    double yaw = Math.abs(RotationUtils.getRotation(BlockUtils.fromBPToVec(b).addVector(0.5, 0, 0.5)).yaw);
+    cost += yaw / 100;
 
     return cost;
   }

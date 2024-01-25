@@ -66,7 +66,6 @@ public class MiningMacro {
     if (!isOn) {
       if (packetUtil.isStartSent) {
         Dependencies.mc.thePlayer.swingItem();
-        PacketUtils.sendAbortPacket(curMiningBlock, PacketUtils.getEnum(curMiningBlock));
         packetUtil.isStartSent = false;
       }
       return;
@@ -89,26 +88,18 @@ public class MiningMacro {
       }
 
       if (curMiningBlock == null) {
-        curMiningBlock = getMiningBlock();
+        curMiningBlock = listUtils.currentlyPossibleToSee.get(0);
         if (curMiningBlock == null) {
           listUtils.currentlyPossibleToSee.clear();
           return;
         }
         timeUtil.startTimeBreakBlock = System.currentTimeMillis();
+        // TODO: add @this support
         timeUtil.projectedEndTimeBreakBlock =
           (long) (
-            util.getMiningTimeBlock(curMiningBlock, 2300) + RandomUtils.getRandomTime(0, timeUtil.extraBreakTimeWindow)
+            util.getMiningTimeBlock(curMiningBlock, 1794) + RandomUtils.getRandomTime(0, timeUtil.extraBreakTimeWindow)
           );
       }
-    }
-
-    if (
-      curMiningBlock != null &&
-      MathUtils.distanceFromTo(Dependencies.mc.thePlayer.getPosition(), curMiningBlock) >=
-      Dependencies.mc.playerController.getBlockReachDistance() &&
-      packetUtil.isStartSent
-    ) {
-      PacketUtils.sendAbortPacket(curMiningBlock, PacketUtils.getEnum(curMiningBlock));
     }
 
     /*if (
@@ -119,7 +110,9 @@ public class MiningMacro {
       return;
     }*/
 
-    if (timeUtil.timeUntilShift >= 2000 && !isShifterOn) {
+    if (
+      System.currentTimeMillis() - timeUtil.projectedEndTimeBreakBlock - timeUtil.starTimeMsSystem >= 0 && !isShifterOn
+    ) {
       ChatUtils.chat(String.valueOf(timeUtil.timeUntilShift));
       shifter.run(
         curMiningBlock,
@@ -127,7 +120,6 @@ public class MiningMacro {
           @Override
           public void shifterDone() {
             isShifterOn = false;
-            ChatUtils.chat("!!!!!!!!!!!");
             timeUtil.timeUntilShift = 0;
           }
         },
@@ -136,7 +128,7 @@ public class MiningMacro {
       isShifterOn = true;
     }
 
-    if ((curMiningBlock != null) && (!packetUtil.isStartedRotation || isShifterOn)) {
+    if (curMiningBlock != null) {
       Vec3 lookVec = RayTracingUtils.getPossibleLocDefault(
         Dependencies.mc.thePlayer.getPositionVector(),
         curMiningBlock,
@@ -150,8 +142,6 @@ public class MiningMacro {
 
       if (lookVec != null) {
         RotationUtils.smoothLook(RotationUtils.getRotation(lookVec), time);
-      } else {
-        ChatUtils.chat("NUL!!");
       }
     }
 

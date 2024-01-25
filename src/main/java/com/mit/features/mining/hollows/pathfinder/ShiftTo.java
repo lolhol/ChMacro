@@ -41,6 +41,7 @@ public class ShiftTo {
 
   public void run(BlockPos miningNext, ShifterCallback shifterCallback, List<BlockPos> blocksSeen) {
     this.miningNext = miningNext;
+    Vec3 miningNextVec = new Vec3(miningNext.getX() + 0.5, miningNext.getY(), miningNext.getZ() + 0.5);
     this.shifterCallback = shifterCallback;
     MinecraftForge.EVENT_BUS.register(this);
     new Thread(() -> {
@@ -50,47 +51,63 @@ public class ShiftTo {
         BlockPos best = null;
         double bestDist = 1000;
         blocksUnder = getBlocksUnder();
-        ChatUtils.chat(String.valueOf(blocksSeen.size()));
-        blocksUnder.sort(Comparator.comparingInt((BlockPos a) -> a.getX()).thenComparingInt(Vec3i::getZ));
+        //ChatUtils.chat(String.valueOf(blocksSeen.size()));
+        //blocksUnder.sort(Comparator.comparingInt((BlockPos a) -> a.getX()).thenComparingInt(Vec3i::getZ));
+
+        Vec3 vec = null;
 
         for (int i = -1; i <= 1; i += 1) {
           for (int j = -1; j <= 1; j += 1) {
             if ((i != 0 && j != 0) || (i == 0 && j == 0)) continue;
             BlockPos b = new BlockPos(
               Dependencies.mc.thePlayer.posX + i,
-              Dependencies.mc.thePlayer.posY,
+              Dependencies.mc.thePlayer.posY - 1,
               Dependencies.mc.thePlayer.posZ + j
             );
 
-            if (b.getX() == Dependencies.mc.thePlayer.posX && b.getY() == Dependencies.mc.thePlayer.posY) continue;
+            //RenderMultipleBlocksMod.renderMultipleBlocks(BlockUtils.fromBPToVec(b), true);
 
             if (
+              !blocksUnder.contains(b) ||
+              (b.getX() == miningNext.getX() && b.getZ() == miningNext.getZ()) ||
               BlockUtils.getBlockType(b.add(0, 1, 0)) != Blocks.air ||
               BlockUtils.getBlockType(b.add(0, 2, 0)) != Blocks.air
-            ) continue;
+            ) {
+              continue;
+            }
+
+            vec = new Vec3(b.getX() + 0.5, b.getY(), b.getZ() + 0.5);
 
             if (
-              RayTracingUtils.getPossibleLocDefault(
-                BlockUtils.fromBPToVec(b.add(0, Dependencies.mc.thePlayer.eyeHeight, 0)),
-                miningNext,
-                new Block[] { Blocks.air }
-              ) ==
-              null ||
-              MathUtils.distanceFromTo(b.add(0, Dependencies.mc.thePlayer.eyeHeight, 0), miningNext) >=
-              Dependencies.mc.playerController.getBlockReachDistance()
-            ) continue;
+              RayTracingUtils.getPossibleLocDefault(vec, miningNext, new Block[] { Blocks.air }) == null ||
+              MathUtils.distanceFromTo(vec.addVector(0, 1, 0), miningNextVec) >=
+              Dependencies.mc.playerController.getBlockReachDistance() -
+              1
+            ) {
+              //ChatUtils.chat("!!!");
+              continue;
+            }
 
-            if (MathUtils.distanceFromTo(b.add(0, Dependencies.mc.thePlayer.eyeHeight, 0), miningNext) < bestDist) {
-              bestDist = MathUtils.distanceFromTo(b.add(0, Dependencies.mc.thePlayer.eyeHeight, 0), miningNext);
-              best = b.add(0.5, 0, 0.5);
+            if (MathUtils.distanceFromTo(vec.addVector(0, 1, 0), miningNextVec) < bestDist) {
+              //ChatUtils.chat("!!!");
+              bestDist = MathUtils.distanceFromTo(vec.addVector(0, 1, 0), miningNextVec);
+              best = b;
             }
           }
         }
 
-        if (best != null) {
+        if (
+          best != null &&
+          MathUtils.distanceFromTo(vec, miningNextVec) <
+          MathUtils.distanceFromTo(
+            Dependencies.mc.thePlayer.getPositionVector().addVector(0, Dependencies.mc.thePlayer.eyeHeight, 0),
+            miningNextVec
+          ) +
+          1
+        ) {
           RenderMultipleBlocksMod.renderMultipleBlocks(BlockUtils.fromBPToVec(best), true);
           ChatUtils.chat("PATHFINDING");
-          block = BlockUtils.fromBPToVec(best);
+          block = BlockUtils.fromBPToVec(best).addVector(0.5, 0, 0.5);
           /*path =
             finder.fromClassToVec(
               finder.run(
@@ -140,11 +157,12 @@ public class ShiftTo {
       return;
     }
 
-    KeyBindHandler.resetKeybindState();
+    //KeyBindHandler.resetKeybindState();
+    KeyBindHandler.updateKeys(false, false, false, false, false, false, true);
     for (KeyBinding k : VecUtils.getNeededKeyPresses(plyLoc, block)) {
       KeyBindHandler.setKeyBindState(k, true);
     }
-    KeyBindHandler.setKeyBindState(Dependencies.mc.gameSettings.keyBindSneak, true);
+    //KeyBindHandler.setKeyBindState(Dependencies.mc.gameSettings.keyBindSneak, true);
   }
 
   private List<BlockPos> getBlocksUnder() {
