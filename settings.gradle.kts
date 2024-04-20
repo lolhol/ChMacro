@@ -23,5 +23,5 @@ pluginManagement {
     }
 }
 
-rootProject.name = "ArmadilloMacro"
-include("ArmadilloMacro.main")
+rootProject.name = "ChMacro"
+include("ChMacro.main")

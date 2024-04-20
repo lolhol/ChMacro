@@ -4,7 +4,7 @@ import com.mit.features.mining.hollows.macro.data.CostUtils;
 import com.mit.features.mining.hollows.macro.data.ListUtil;
 import com.mit.global.Dependencies;
 import com.mit.util.*;
-import java.awt.*;
+
 import java.util.*;
 import java.util.List;
 import net.minecraft.block.Block;

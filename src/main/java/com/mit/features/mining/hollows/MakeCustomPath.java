@@ -3,7 +3,6 @@ package com.mit.features.mining.hollows;
 import com.mit.features.mining.hollows.scan.PathScanner;
 import java.util.List;
 import net.minecraft.util.BlockPos;
-import org.jetbrains.annotations.Async;
 
 public class MakeCustomPath {
 

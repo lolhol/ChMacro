@@ -3,7 +3,6 @@ package com.mit.features.pathfind.utils;
 import com.mit.global.Dependencies;
 import com.mit.util.BlockUtils;
 import com.mit.util.MathUtils;
-import com.mit.util.PacketUtils;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.Vec3;
 

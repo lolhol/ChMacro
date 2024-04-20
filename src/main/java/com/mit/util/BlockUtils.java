@@ -1,11 +1,10 @@
 package com.mit.util;
 
-import com.mit.features.render.RenderMultipleBlocksMod;
 import com.mit.features.render.RenderPoints;
 import com.mit.global.Dependencies;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Predicate;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;

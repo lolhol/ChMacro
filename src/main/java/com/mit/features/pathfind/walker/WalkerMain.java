@@ -1,13 +1,9 @@
 package com.mit.features.pathfind.walker;
 
-import com.mit.event.MsEvent;
 import com.mit.global.Dependencies;
 import com.mit.util.*;
 import java.util.*;
 import net.minecraft.client.settings.KeyBinding;
-import net.minecraft.util.BlockPos;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.Vec3;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;

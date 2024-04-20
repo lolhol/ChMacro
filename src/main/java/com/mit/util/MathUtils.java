@@ -1,9 +1,7 @@
 package com.mit.util;
 
-import com.sun.javafx.geom.Vec2d;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.MathHelper;
-import net.minecraft.util.Tuple;
 import net.minecraft.util.Vec3;
 
 public class MathUtils {

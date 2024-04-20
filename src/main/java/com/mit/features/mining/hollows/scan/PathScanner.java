@@ -2,7 +2,6 @@ package com.mit.features.mining.hollows.scan;
 
 import com.google.common.util.concurrent.AtomicDouble;
 import com.mit.features.render.RenderMultipleBlocksMod;
-import com.mit.features.render.RenderOneBlockMod;
 import com.mit.global.Dependencies;
 import com.mit.util.BlockUtils;
 import com.mit.util.ChatUtils;

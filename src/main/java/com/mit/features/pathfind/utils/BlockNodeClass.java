@@ -1,9 +1,6 @@
 package com.mit.features.pathfind.utils;
 
-import com.mit.features.render.RenderPoints;
-import com.mit.global.Dependencies;
 import com.mit.util.BlockUtils;
-import com.mit.util.ChatUtils;
 import com.mit.util.MathUtils;
 import java.util.HashSet;
 import lombok.AllArgsConstructor;

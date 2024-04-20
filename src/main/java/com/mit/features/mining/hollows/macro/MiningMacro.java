@@ -8,18 +8,16 @@ import com.mit.features.mining.hollows.pathfinder.ShiftTo;
 import com.mit.features.render.RenderMultipleBlocksMod;
 import com.mit.global.Dependencies;
 import com.mit.util.*;
-import java.util.ArrayList;
+
 import java.util.HashSet;
-import java.util.List;
+
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.Vec3;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
-import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
-import org.lwjgl.Sys;
 
 public class MiningMacro {
 

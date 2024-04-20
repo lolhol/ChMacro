@@ -1,31 +1,23 @@
 package com.mit.features.mining.hollows.pathfinder;
 
-import com.mit.features.mining.hollows.macro.data.CostUtils;
 import com.mit.features.mining.hollows.macro.util.ShifterCallback;
 import com.mit.features.pathfind.main.AStarPathFinder;
 import com.mit.features.render.RenderMultipleBlocksMod;
 import com.mit.global.Dependencies;
 import com.mit.util.*;
-import java.awt.*;
+
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
-import java.util.stream.Collectors;
+
 import net.minecraft.block.Block;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.settings.KeyBinding;
-import net.minecraft.entity.Entity;
 import net.minecraft.init.Blocks;
-import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.Vec3;
-import net.minecraft.util.Vec3i;
-import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
-import org.lwjgl.Sys;
 
 public class ShiftTo {
 

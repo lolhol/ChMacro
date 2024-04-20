@@ -1,6 +1,5 @@
 package com.mit.features.mining.hollows.scan;
 
-import com.mit.features.render.RenderMultipleBlocksMod;
 import com.mit.global.Dependencies;
 import com.mit.util.BlockUtils;
 import com.mit.util.ChatUtils;

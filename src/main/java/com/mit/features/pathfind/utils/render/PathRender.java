@@ -4,7 +4,7 @@ import com.mit.features.render.RenderMultipleBlocksMod;
 import com.mit.features.render.RenderMultipleLines;
 import com.mit.util.BlockUtils;
 import java.util.List;
-import net.minecraft.util.BlockPos;
+
 import net.minecraft.util.Vec3;
 
 public class PathRender {

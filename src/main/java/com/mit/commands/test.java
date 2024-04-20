@@ -4,7 +4,6 @@ import com.mit.features.foraging.ForgaingMacroMain;
 import com.mit.features.mining.hollows.macro.MiningMacro;
 import com.mit.features.pathfind.main.AStarPathFinder;
 import com.mit.features.pathfind.walker.WalkerMain;
-import com.mit.util.ChatUtils;
 import com.mit.util.PacketUtils;
 import gg.essential.api.commands.Command;
 import gg.essential.api.commands.DefaultHandler;

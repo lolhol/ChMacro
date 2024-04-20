@@ -6,7 +6,6 @@ import com.mit.commands.StartMacroCommand;
 import com.mit.commands.test;
 import com.mit.event.MsEvent;
 import com.mit.event.SecondEvent;
-import com.mit.features.Features;
 import com.mit.features.mining.MiningFeatures;
 import com.mit.features.mining.hollows.GetMetalDetectorChestLoc;
 import com.mit.features.mining.hollows.MiningNuker;
@@ -44,6 +43,7 @@ public class MIT {
 
   @Mod.EventHandler
   public void init(FMLInitializationEvent event) {
+    //System.out.println("!!!!!!MIT~");
     Display.setTitle("MiningInTwo");
     registerCommands(new OpenGUI(), new test(), new AddBlocksToRoute(), new StartMacroCommand());
     registerEvents(

@@ -1,9 +1,5 @@
 package com.mit.features.render.items;
 
-import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent;
-
 public class RenderMushrooms {
   /*@SubscribeEvent
   public void onParticleSpawn(SpawnP event) {

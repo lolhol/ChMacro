@@ -1,19 +1,13 @@
 package com.mit.features.pathfind.utils;
 
-import com.mit.features.render.RenderMultipleBlocksMod;
-import com.mit.features.render.RenderMultipleLines;
-import com.mit.features.render.RenderPoints;
 import com.mit.util.BlockUtils;
 import com.mit.util.MathUtils;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import net.minecraft.util.BlockPos;
-import net.minecraft.util.Tuple;
-import net.minecraft.util.Vec3;
 
 public class Utils extends Costs {
 

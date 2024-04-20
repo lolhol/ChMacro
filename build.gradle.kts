@@ -7,7 +7,7 @@ plugins {
     //id("io.github.juuxel.loom-quiltflower-mini") version "7d04f32023"
 }
 
-group = "com.armadillomacro.archloomtemplate"
+group = "com.ChMacro.archloomtemplate"
 version = "1.0.0"
 
 // Toolchains:
@@ -24,7 +24,7 @@ loom {
             property("mixin.debug", "true")
             property("asmhelper.verbose", "true")
             arg("--tweakClass", "org.spongepowered.asm.launch.MixinTweaker")
-            arg("--mixin", "mixins.armadillomacro.json")
+            arg("--mixin", "mixins.ChMacro.json")
             arg("--tweakClass", "gg.essential.loader.stage0.EssentialSetupTweaker")
         }
     }
@@ -37,11 +37,11 @@ loom {
     forge {
         pack200Provider.set(dev.architectury.pack200.java.Pack200Adapter())
         // If you don't want mixins, remove this lines
-        mixinConfig("mixins.armadillomacro.json")
+        mixinConfig("mixins.ChMacro.json")
     }
     // If you don't want mixins, remove these lines
     mixin {
-        defaultRefmapName.set("mixins.armadillomacro.refmap.json")
+        defaultRefmapName.set("mixins.ChMacro.refmap.json")
     }
 }
 
@@ -96,6 +96,8 @@ dependencies {
         isTransitive = false
     }
     annotationProcessor("org.spongepowered:mixin:0.8.4-SNAPSHOT")
+    implementation("org.deeplearning4j:deeplearning4j-core:1.0.0-beta7")
+
 
     // If you don't want to log in with your real minecraft account, remove this line
     //runtimeOnly("me.djtheredstoner:DevAuth-forge-legacy:1.1.0")
@@ -120,7 +122,7 @@ sourceSets {
 }
 
 tasks.withType(Jar::class) {
-    archiveBaseName.set("armadillomacro")
+    archiveBaseName.set("ChMacro")
     manifest.attributes.run {
         this["FMLCorePluginContainsFMLMod"] = "true"
         this["ForceLoadAsMod"] = "true"
@@ -128,7 +130,7 @@ tasks.withType(Jar::class) {
         // If you don't want mixins, remove these lines
         this["TweakClass"] = "gg.essential.loader.stage0.EssentialSetupTweaker"
         //this["TweakClass"] = "org.spongepowered.asm.launch.MixinTweaker"
-        this["MixinConfigs"] = "mixins.armadillomacro.json"
+        this["MixinConfigs"] = "mixins.ChMacro.json"
     }
 }
 
@@ -149,7 +151,7 @@ tasks.shadowJar {
     }
 
     // If you want to include other dependencies and shadow them, you can relocate them in here
-    fun relocate(name: String) = relocate(name, "com.armadillomacro.deps.$name")
+    //fun relocate(name: String) = relocate(name, "com.ChMacro.deps.$name")
 }
 
 tasks.assemble.get().dependsOn(tasks.remapJar)

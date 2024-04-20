@@ -1,6 +1,6 @@
 {
   "package": "com.mit.mixin",
-  "refmap": "mixins.armadillomacro.refmap.json",
+  "refmap": "mixins.ChMacro.refmap.json",
   "minVersion": "0.7",
   "compatibilityLevel": "JAVA_8",
   "client": [
