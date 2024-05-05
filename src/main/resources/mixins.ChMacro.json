@@ -4,9 +4,10 @@
   "minVersion": "0.7",
   "compatibilityLevel": "JAVA_8",
   "client": [
-    "RenderManagerAccessor",
     "CancelRenderScore",
-    "MixinNetworkManager"
+    "MixinNetworkManager",
+    "RenderManagerAccessor",
+    "MixinOnBlockBreakUpdate"
   ],
   "mixins": [
   ]

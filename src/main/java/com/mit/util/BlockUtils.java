@@ -4,7 +4,7 @@ import com.mit.features.render.RenderPoints;
 import com.mit.global.Dependencies;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
-
+import java.util.function.Predicate;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
@@ -494,6 +494,7 @@ public class BlockUtils {
   public static Vec3 fromBPToVec(BlockPos block) {
     return new Vec3(block.getX(), block.getY(), block.getZ());
   }
+
   /*public static List<BlockPos> getShortList(List<BlockNodeClass> blocks) {
     boolean added = false;
 
@@ -595,4 +596,50 @@ public class BlockUtils {
 
     return returnBlocks;
   }*/
+
+  public static HashSet<BlockPos> getAllAdjacentBlocks2D(BlockPos block, int maxBlocks, Predicate<BlockPos> isValid) {
+    List<BlockPos> blocks = new ArrayList<>();
+    HashSet<BlockPos> returnBlocks = new HashSet<>();
+    blocks.add(block);
+    int curAllBlocks = 0;
+
+    while (!blocks.isEmpty() && curAllBlocks <= maxBlocks) {
+      BlockPos curBlock = blocks.remove(0);
+      for (int x = -1; x <= 1; x++) {
+        for (int y = -1; y <= 1; y++) {
+          BlockPos newBlock = new BlockPos(curBlock.getX() + x, curBlock.getY() + y, curBlock.getZ());
+          if (isValid.test(newBlock) && !returnBlocks.contains(newBlock)) {
+            returnBlocks.add(newBlock);
+            blocks.add(newBlock);
+          }
+        }
+      }
+    }
+
+    return returnBlocks;
+  }
+
+  public static HashSet<BlockPos> getAllAdjacentBlocks3D(BlockPos block, int maxBlocks, Predicate<BlockPos> isValid) {
+    List<BlockPos> blocks = new ArrayList<>();
+    HashSet<BlockPos> returnBlocks = new HashSet<>();
+    blocks.add(block);
+    int curAllBlocks = 0;
+
+    while (!blocks.isEmpty() && curAllBlocks <= maxBlocks) {
+      BlockPos curBlock = blocks.remove(0);
+      for (int x = -1; x <= 1; x++) {
+        for (int y = -1; y <= 1; y++) {
+          for (int z = -1; z <= 1; z++) {
+            BlockPos newBlock = new BlockPos(curBlock.getX() + x, curBlock.getY() + y, curBlock.getZ() + z);
+            if (isValid.test(newBlock) && !returnBlocks.contains(newBlock)) {
+              returnBlocks.add(newBlock);
+              blocks.add(newBlock);
+            }
+          }
+        }
+      }
+    }
+
+    return returnBlocks;
+  }
 }

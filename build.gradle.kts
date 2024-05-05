@@ -98,6 +98,9 @@ dependencies {
     annotationProcessor("org.spongepowered:mixin:0.8.4-SNAPSHOT")
     implementation("org.deeplearning4j:deeplearning4j-core:1.0.0-beta7")
 
+    // implementation("com.github.lolhol:ForgeFinder:0.1")
+
+    implementation("org.nd4j:nd4j-native-platform:1.0.0-beta7")
 
     // If you don't want to log in with your real minecraft account, remove this line
     //runtimeOnly("me.djtheredstoner:DevAuth-forge-legacy:1.1.0")

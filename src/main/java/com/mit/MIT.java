@@ -1,8 +1,11 @@
 package com.mit;
 
+import com.mit.AI.ArtificialInteli;
 import com.mit.commands.AddBlocksToRoute;
 import com.mit.commands.OpenGUI;
 import com.mit.commands.StartMacroCommand;
+import com.mit.commands.ai.AISwitchTrainingTesting;
+import com.mit.commands.ai.AITestingSaveAsFile;
 import com.mit.commands.test;
 import com.mit.event.MsEvent;
 import com.mit.event.SecondEvent;
@@ -10,6 +13,7 @@ import com.mit.features.mining.MiningFeatures;
 import com.mit.features.mining.hollows.GetMetalDetectorChestLoc;
 import com.mit.features.mining.hollows.MiningNuker;
 import com.mit.features.render.*;
+import com.mit.global.Dependencies;
 import com.mit.util.PacketUtils;
 import com.mit.util.RotationUtils;
 import gg.essential.api.EssentialAPI;
@@ -45,7 +49,14 @@ public class MIT {
   public void init(FMLInitializationEvent event) {
     //System.out.println("!!!!!!MIT~");
     Display.setTitle("MiningInTwo");
-    registerCommands(new OpenGUI(), new test(), new AddBlocksToRoute(), new StartMacroCommand());
+    registerCommands(
+      new OpenGUI(),
+      new test(),
+      new AddBlocksToRoute(),
+      new StartMacroCommand(),
+      new AISwitchTrainingTesting(),
+      new AITestingSaveAsFile()
+    );
     registerEvents(
       new RenderSingleLineTwoPoints(),
       new RenderPoints(),
@@ -54,7 +65,8 @@ public class MIT {
       new RenderMultipleLines(),
       new RenderMultipleBlocksMod(),
       new RotationUtils(),
-      new PacketUtils()
+      new PacketUtils(),
+      Dependencies.ai
     );
   }
 
