@@ -52,7 +52,7 @@ public class PathMaker {
           }
         }
 
-        ChatUtils.chat(Dependencies.ModPrefix + " Scanner done running!");
+        ChatUtils.chat(Dependencies.MOD.ModPrefix + " Scanner done running!");
 
         this.allFound = scanner.foundPos;
         returnPath = reqRun(getMostOptimal(allFound), new ArrayList<>(), 0);

@@ -1,0 +1,8 @@
+This file is created to serve as a reference for various things in this proj
+
+- Route Writing
+
+Extension ".mitroute"
+
+  name of route      X             Y            Z
+   String(UTF), int(4 bytes), int(4 bytes), int(4 bytes)...

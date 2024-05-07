@@ -1,11 +1,13 @@
 package com.mit;
 
-import com.mit.AI.ArtificialInteli;
-import com.mit.commands.AddBlocksToRoute;
 import com.mit.commands.OpenGUI;
 import com.mit.commands.StartMacroCommand;
 import com.mit.commands.ai.AISwitchTrainingTesting;
 import com.mit.commands.ai.AITestingSaveAsFile;
+import com.mit.commands.route.AddBlocksToRoute;
+import com.mit.commands.route.LoadRouteCommand;
+import com.mit.commands.route.SaveRouteFileCommand;
+import com.mit.commands.route.StartRouteRenderCommand;
 import com.mit.commands.test;
 import com.mit.event.MsEvent;
 import com.mit.event.SecondEvent;
@@ -55,7 +57,10 @@ public class MIT {
       new AddBlocksToRoute(),
       new StartMacroCommand(),
       new AISwitchTrainingTesting(),
-      new AITestingSaveAsFile()
+      new AITestingSaveAsFile(),
+      new LoadRouteCommand(),
+      new SaveRouteFileCommand(),
+      new StartRouteRenderCommand()
     );
     registerEvents(
       new RenderSingleLineTwoPoints(),
@@ -66,7 +71,7 @@ public class MIT {
       new RenderMultipleBlocksMod(),
       new RotationUtils(),
       new PacketUtils(),
-      Dependencies.ai
+      new RouteRenderer()
     );
   }
 

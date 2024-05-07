@@ -13,7 +13,7 @@ public class AITestingSaveAsFile extends Command {
 
   @DefaultHandler
   public void handle() {
-    Dependencies.ai.saveModel();
-    ChatUtils.chat("Model saved to " + Dependencies.ai.getLatestSavedModel());
+    //Dependencies.ai.saveModel();
+    //ChatUtils.chat("Model saved to " + Dependencies.ai.getLatestSavedModel());
   }
 }

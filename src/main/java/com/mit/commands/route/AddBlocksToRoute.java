@@ -1,4 +1,4 @@
-package com.mit.commands;
+package com.mit.commands.route;
 
 import com.mit.features.render.RenderMultipleBlocksMod;
 import com.mit.global.Dependencies;
@@ -11,18 +11,16 @@ import net.minecraft.util.BlockPos;
 
 public class AddBlocksToRoute extends Command {
 
-  public static List<BlockPos> blocks = new ArrayList<>();
-
   public AddBlocksToRoute() {
     super("addBlock");
   }
 
   @DefaultHandler
   public void handle() {
-    RenderMultipleBlocksMod.renderMultipleBlocks(
-      BlockUtils.fromBPToVec(BlockUtils.fromVecToBP(Dependencies.mc.thePlayer.getPositionVector()).add(0.5, -1, 0.5)),
-      true
-    );
-    blocks.add(Dependencies.mc.thePlayer.getPosition().add(0, -1, 0));
+    if (Dependencies.MINING.currentRoute == null) {
+      Dependencies.MINING.setRoute("", new ArrayList<>());
+    }
+
+    Dependencies.MINING.currentRoute.add(Dependencies.mc.thePlayer.getPosition().add(0, -1, 0));
   }
 }

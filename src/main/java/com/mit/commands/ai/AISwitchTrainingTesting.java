@@ -16,7 +16,7 @@ public class AISwitchTrainingTesting extends Command {
 
   @DefaultHandler
   public void onCommand() {
-    Dependencies.ai.setTraining(isOn);
+    //Dependencies.ai.setTraining(isOn);
     ChatUtils.chat("Set AI training/testing mode to " + (isOn ? "training" : "testing"));
     isOn = !isOn;
   }
